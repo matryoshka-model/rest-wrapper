@@ -5,14 +5,22 @@
     "license": "BSD-2-Clause",
     "require": {
         "php": ">=5.4.0",
+        "zendframework/zendframework": "~2.3",
         "matryoshka-model/matryoshka": "self.version",
-        "zendframework/zendframework": "~2.3"
+        "zendframework/zendxml": "~1.0-dev",
+        "zendframework/zendservice-api" : "1.0.0"
     },
     "require-dev": {
         "phpunit/phpunit": "4.2.*",
         "satooshi/php-coveralls": "dev-master",
         "zendframework/zendframework": "dev-master"
     },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/zendframework/ZendService_Api.git"
+        }
+    ],
     "authors": [
         {
             "name": "Leonardo Grasso",
