@@ -66,11 +66,11 @@ class Client extends ZendClient
 
         switch ($formatOutput) {
             case self::FORMAT_OUTPUT_JSON:
-                return Json::decode($bodyResponse, $this->returnType());
+                return Json::decode($bodyResponse, $this->getReturnType());
                 break;
             case self::FORMAT_OUTPUT_XML:
                 $xml = Security::scan($response->getBody());
-                return Json::decode(Json::encode((array) $xml), $this->returnType());
+                return Json::decode(Json::encode((array) $xml), $this->getReturnType());
                 break;
             default:
                 throw new Exception\InvalidFormatOutputException(sprintf("The format output %s is invalid", $formatOutput));
@@ -84,19 +84,14 @@ class Client extends ZendClient
      */
     protected function getExceptionInvalidResponse($bodyDecodeResponse)
     {
-        if (is_array($bodyDecodeResponse)) {
-            $exception = new Exception\InvalidResponseException($bodyDecodeResponse['detail']);
-            $exception->setStatus($bodyDecodeResponse['status']);
-            $exception->setType($bodyDecodeResponse['type']);
-            $exception->setTitle($bodyDecodeResponse['title']);
+        if (is_object($bodyDecodeResponse)) {
+            $bodyDecodeResponse = (array) $bodyDecodeResponse;
         }
 
-        if (is_object($bodyDecodeResponse)) {
-            $exception = new Exception\InvalidResponseException($bodyDecodeResponse->detail);
-            $exception->setStatus($bodyDecodeResponse->status);
-            $exception->setType($bodyDecodeResponse->type);
-            $exception->setTitle($bodyDecodeResponse->title);
-        }
+        $exception = new Exception\InvalidResponseException($bodyDecodeResponse['detail']);
+        $exception->setStatus($bodyDecodeResponse['status']);
+        $exception->setType($bodyDecodeResponse['type']);
+        $exception->setTitle($bodyDecodeResponse['title']);
 
         return $exception;
     }
