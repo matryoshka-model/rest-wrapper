@@ -1,4 +1,11 @@
 <?php
+/**
+ * REST matryoshka wrapper
+ *
+ * @link        https://github.com/matryoshka-model/rest-wrapper
+ * @copyright   Copyright (c) 2014, Ripa Club
+ * @license     http://opensource.org/licenses/BSD-2-Clause Simplified BSD License
+ */
 namespace Matryoshka\Model\Wrapper\Rest;
 
 use Zend\Http\Client as ZendClient;
@@ -6,18 +13,13 @@ use Zend\Http\Response;
 use Zend\Json\Json;
 use ZendXml\Security;
 
+/**
+ * Class Client
+ */
 class Client extends ZendClient
 {
-    /**
-     * CONSTANT
-     ******************************************************************************************************************/
-
     const FORMAT_OUTPUT_JSON = 'json';
     const FORMAT_OUTPUT_XML  = 'xml';
-
-    /**
-     * ATTRIBUTE
-     ******************************************************************************************************************/
 
     /**
      * @var array
@@ -35,9 +37,8 @@ class Client extends ZendClient
     protected $returnType = Json::TYPE_ARRAY;
 
     /**
-     * METHOD
-     ******************************************************************************************************************/
-
+     * @return array|object
+     */
     public function sendRequest()
     {
         $codesStatusValid = $this->getCodesStatusValid();
@@ -73,7 +74,10 @@ class Client extends ZendClient
                 return Json::decode(Json::encode((array) $xml), $this->getReturnType());
                 break;
             default:
-                throw new Exception\InvalidFormatOutputException(sprintf("The format output %s is invalid", $formatOutput));
+                throw new Exception\InvalidFormatOutputException(sprintf(
+                    'The format output "%s" is invalid',
+                    $formatOutput
+                ));
                 break;
         }
     }

@@ -1,4 +1,11 @@
 <?php
+/**
+ * REST matryoshka wrapper
+ *
+ * @link        https://github.com/matryoshka-model/rest-wrapper
+ * @copyright   Copyright (c) 2014, Ripa Club
+ * @license     http://opensource.org/licenses/BSD-2-Clause Simplified BSD License
+ */
 namespace Matryoshka\Model\Wrapper\Rest\Service;
 
 use Matryoshka\Model\Wrapper\Rest\Client;
@@ -6,6 +13,9 @@ use Zend\ServiceManager\AbstractFactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use ZendService\Api\Api;
 
+/**
+ * Class ApiAbstractServiceFactory
+ */
 class ApiAbstractServiceFactory implements AbstractFactoryInterface
 {
     /**
