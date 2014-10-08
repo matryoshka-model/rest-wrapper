@@ -58,6 +58,11 @@ class ApiAbstractServiceFactory implements AbstractFactoryInterface
         $client = new Client();
         $client->setUri($config['url']);
 
+        // Array of header
+        if (isset($config['headers'])) {
+            $client->setHeaders($config['headers']);
+        }
+
         // Array of int code valid
         if (isset($config['codesStatusValid'])) {
             $client->setCodesStatusValid($config['codesStatusValid']);
