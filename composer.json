@@ -1,12 +1,12 @@
 {
     "name": "matryoshka-model/rest-wrapper",
     "description": "Matryoshka wrapper aimed at creating restful API clients",
-    "homepage": "https://github.com/matryoshka-model/rest-wrapper.git",
+    "homepage": "http://github.com/matryoshka-model/rest-wrapper",
     "license": "BSD-2-Clause",
     "require": {
         "php": ">=5.4.0",
         "zendframework/zendframework": "~2.3",
-        "matryoshka-model/matryoshka": "0.5.*@dev",
+        "matryoshka-model/matryoshka": "0.6.*@dev",
         "zendframework/zendxml": "~1.0-dev"
     },
     "require-dev": {
@@ -31,6 +31,12 @@
             "homepage": "http://github.com/visa4"
         }
     ],
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.5.x-dev",
+            "dev-develop": "0.6.x-dev"
+        }
+    },
     "autoload": {
         "psr-0": {
             "Matryoshka": "library/",

@@ -13,4 +13,4 @@ namespace Matryoshka\Model\Wrapper\Rest\Exception;
  */
 interface ExceptionInterface
 {
-} 
+}

@@ -66,4 +66,4 @@ class InvalidResponseException extends \RuntimeException implements ExceptionInt
     {
         return $this->type;
     }
-} 
+}

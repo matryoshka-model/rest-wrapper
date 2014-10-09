@@ -21,7 +21,7 @@ class ApiAbstractServiceFactory implements AbstractFactoryInterface
     /**
      * @var string
      */
-    protected $configKey = 'rest-api';
+    protected $configKey = 'rest-api'; // TODO: choose correct config node name
 
     /**
      * @var array
@@ -107,9 +107,7 @@ class ApiAbstractServiceFactory implements AbstractFactoryInterface
         }
 
         $config = $serviceLocator->get('Config');
-        if (!isset($config[$this->configKey])
-            || !is_array($config[$this->configKey])
-        ) {
+        if (!isset($config[$this->configKey]) || !is_array($config[$this->configKey])) {
             $this->config = [];
             return $this->config;
         }
@@ -127,8 +125,7 @@ class ApiAbstractServiceFactory implements AbstractFactoryInterface
      */
     public function checkHasRequestedNameConfig($config, $requestedName)
     {
-        if(
-            isset($config[$requestedName])
+        if (isset($config[$requestedName])
             && is_array($config[$requestedName])
             && !empty($config[$requestedName])
         ) {
@@ -146,14 +143,12 @@ class ApiAbstractServiceFactory implements AbstractFactoryInterface
      */
     public function checkHasUrlConfig($config, $requestedName)
     {
-        if (
-            isset($config[$requestedName]['url'])
+        if (isset($config[$requestedName]['url'])
             && is_string($config[$requestedName]['url'])
             && !empty($config[$requestedName]['url'])
-        )
-        {
+        ) {
             return true;
         }
         return false;
     }
-} 
+}
