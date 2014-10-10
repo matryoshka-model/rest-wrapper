@@ -43,11 +43,6 @@ class Client extends ZendClient implements ProfilerAwareInterface
     protected $returnType = Json::TYPE_ARRAY;
 
     /**
-     * @var
-     */
-    protected $profiler;
-
-    /**
      * @return array|object
      */
     public function sendRequest()
