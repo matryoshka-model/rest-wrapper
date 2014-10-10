@@ -76,6 +76,11 @@ class ApiAbstractServiceFactory implements AbstractFactoryInterface
             $client->setFormatOutput($config['formatOutput']);
         }
 
+        // Profiler
+        if ($serviceLocator->has('profiler')) {
+            $client->setProfiler($serviceLocator->get('profiler'));
+        }
+
         return $client;
     }
 

@@ -1,13 +1,23 @@
 <?php
 namespace Matryoshka\Model\Wrapper\Rest;
 
+use Matryoshka\Model\Wrapper\Rest\Profiler\ProfilerAwareInterface;
+use Matryoshka\Model\Wrapper\Rest\Profiler\ProfilerAwareTrait;
+use Matryoshka\Model\Wrapper\Rest\Profiler\ProfilerInterface;
 use Zend\Http\Client as ZendClient;
 use Zend\Http\Response;
 use Zend\Json\Json;
+use Zend\Uri\Http;
 use ZendXml\Security;
 
-class Client extends ZendClient
+class Client extends ZendClient implements ProfilerAwareInterface
 {
+    /**
+     * TRAIT
+     ******************************************************************************************************************/
+
+    use ProfilerAwareTrait;
+
     /**
      * CONSTANT
      ******************************************************************************************************************/
@@ -35,9 +45,17 @@ class Client extends ZendClient
     protected $returnType = Json::TYPE_ARRAY;
 
     /**
+     * @var
+     */
+    protected $profiler;
+
+    /**
      * METHOD
      ******************************************************************************************************************/
 
+    /**
+     * @return array|object
+     */
     public function sendRequest()
     {
         $codesStatusValid = $this->getCodesStatusValid();
@@ -53,6 +71,14 @@ class Client extends ZendClient
 
         throw $this->getExceptionInvalidResponse($bodyDecodeResponse);
     }
+
+    protected function doRequest(Http $uri, $method, $secure = false, $headers = array(), $body = '')
+    {
+
+
+        return parent::doRequest($uri, $method, $secure, $headers, $body);
+    }
+
 
     /**
      * @param Response $response
