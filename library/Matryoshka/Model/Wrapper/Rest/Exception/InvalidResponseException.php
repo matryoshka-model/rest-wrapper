@@ -1,9 +1,17 @@
 <?php
+/**
+ * REST matryoshka wrapper
+ *
+ * @link        https://github.com/matryoshka-model/rest-wrapper
+ * @copyright   Copyright (c) 2014, Ripa Club
+ * @license     http://opensource.org/licenses/BSD-2-Clause Simplified BSD License
+ */
 namespace Matryoshka\Model\Wrapper\Rest\Exception;
 
-use RuntimeException;
-
-class InvalidResponseException extends RuntimeException
+/**
+ * Class InvalidResponseException
+ */
+class InvalidResponseException extends \RuntimeException implements ExceptionInterface
 {
     protected $status;
 
@@ -58,4 +66,4 @@ class InvalidResponseException extends RuntimeException
     {
         return $this->type;
     }
-} 
+}

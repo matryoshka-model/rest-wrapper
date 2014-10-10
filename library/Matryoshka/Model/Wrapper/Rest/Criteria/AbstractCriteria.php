@@ -1,18 +1,21 @@
 <?php
 /**
- * Created by visa
- * Date:  07/10/14 13.14
- * Class: AbstractCriteria.php
+ * REST matryoshka wrapper
+ *
+ * @link        https://github.com/matryoshka-model/rest-wrapper
+ * @copyright   Copyright (c) 2014, Ripa Club
+ * @license     http://opensource.org/licenses/BSD-2-Clause Simplified BSD License
  */
-
 namespace Matryoshka\Model\Wrapper\Rest\Criteria;
-
 
 use Matryoshka\Model\Criteria\DeletableCriteriaInterface;
 use Matryoshka\Model\Criteria\ReadableCriteriaInterface;
 use Matryoshka\Model\Criteria\WritableCriteriaInterface;
 use Matryoshka\Model\ModelInterface;
 
+/**
+ * Class AbstractCriteria
+ */
 abstract class AbstractCriteria implements
     ReadableCriteriaInterface,
     WritableCriteriaInterface,
@@ -43,10 +46,5 @@ abstract class AbstractCriteria implements
     public function applyWrite(ModelInterface $model, array &$data)
     {
         // TODO: Implement applyWrite() method.
-    }
-
-    function __call($name, $arguments)
-    {
-        // TODO: Implement __call() method.
     }
 }

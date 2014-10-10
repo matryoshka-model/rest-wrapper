@@ -1,4 +1,11 @@
 <?php
+/**
+ * REST matryoshka wrapper
+ *
+ * @link        https://github.com/matryoshka-model/rest-wrapper
+ * @copyright   Copyright (c) 2014, Ripa Club
+ * @license     http://opensource.org/licenses/BSD-2-Clause Simplified BSD License
+ */
 namespace Matryoshka\Model\Wrapper\Rest;
 
 use Matryoshka\Model\Wrapper\Rest\Profiler\ProfilerAwareInterface;
@@ -10,24 +17,14 @@ use Zend\Json\Json;
 use Zend\Uri\Http;
 use ZendXml\Security;
 
-class Client extends ZendClient implements ProfilerAwareInterface
+/**
+ * Class Client
+ */
+class Client extends ZendClient
 {
-    /**
-     * TRAIT
-     ******************************************************************************************************************/
-
-    use ProfilerAwareTrait;
-
-    /**
-     * CONSTANT
-     ******************************************************************************************************************/
-
     const FORMAT_OUTPUT_JSON = 'json';
     const FORMAT_OUTPUT_XML  = 'xml';
 
-    /**
-     * ATTRIBUTE
-     ******************************************************************************************************************/
 
     /**
      * @var array
@@ -48,10 +45,6 @@ class Client extends ZendClient implements ProfilerAwareInterface
      * @var
      */
     protected $profiler;
-
-    /**
-     * METHOD
-     ******************************************************************************************************************/
 
     /**
      * @return array|object
@@ -99,7 +92,10 @@ class Client extends ZendClient implements ProfilerAwareInterface
                 return Json::decode(Json::encode((array) $xml), $this->getReturnType());
                 break;
             default:
-                throw new Exception\InvalidFormatOutputException(sprintf("The format output %s is invalid", $formatOutput));
+                throw new Exception\InvalidFormatOutputException(sprintf(
+                    'The format output "%s" is invalid',
+                    $formatOutput
+                ));
                 break;
         }
     }
