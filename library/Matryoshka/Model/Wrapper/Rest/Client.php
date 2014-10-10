@@ -10,7 +10,6 @@ namespace Matryoshka\Model\Wrapper\Rest;
 
 use Matryoshka\Model\Wrapper\Rest\Profiler\ProfilerAwareInterface;
 use Matryoshka\Model\Wrapper\Rest\Profiler\ProfilerAwareTrait;
-use Matryoshka\Model\Wrapper\Rest\Profiler\ProfilerInterface;
 use Zend\Http\Client as ZendClient;
 use Zend\Http\Response;
 use Zend\Json\Json;
@@ -20,8 +19,10 @@ use ZendXml\Security;
 /**
  * Class Client
  */
-class Client extends ZendClient
+class Client extends ZendClient implements ProfilerAwareInterface
 {
+    use ProfilerAwareTrait;
+
     const FORMAT_OUTPUT_JSON = 'json';
     const FORMAT_OUTPUT_XML  = 'xml';
 
