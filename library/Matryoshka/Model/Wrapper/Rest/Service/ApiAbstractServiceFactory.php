@@ -87,8 +87,8 @@ class ApiAbstractServiceFactory implements AbstractFactoryInterface
         }
 
         // Profiler
-        if ($serviceLocator->has('profiler')) {
-            $client->setProfiler($serviceLocator->get('profiler'));
+        if ($serviceLocator->has($config['profiler'])) {
+            $client->setProfiler($serviceLocator->get($config['profiler']));
         }
 
         return $client;
