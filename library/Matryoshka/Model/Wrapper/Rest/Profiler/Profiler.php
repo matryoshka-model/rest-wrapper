@@ -2,6 +2,8 @@
 namespace Matryoshka\Model\Wrapper\Rest\Profiler;
 
 use Zend\Http\Client;
+use Zend\Http\Request;
+use Zend\Http\Response;
 
 /**
  * Class HttpProfiler
@@ -43,7 +45,7 @@ class Profiler implements ProfilerInterface
             'elapse' => null
         );
 
-        if ($target instanceof Client) {
+        if ($target instanceof Request) {
             $profileInformation['headers'] = $target->getHeaders();
             $profileInformation['uri'] = $target->getUri();
         }
@@ -63,8 +65,8 @@ class Profiler implements ProfilerInterface
         $current['end'] = microtime(true);
         $current['elapse'] = $current['end'] - $current['start'];
 
-        if ($target instanceof Client) {
-            $current['body'] = $target->getResponse()->getBody();
+        if ($target instanceof Response) {
+            $current['body'] = $target->getBody();
         }
 
         $this->currentIndex++;
