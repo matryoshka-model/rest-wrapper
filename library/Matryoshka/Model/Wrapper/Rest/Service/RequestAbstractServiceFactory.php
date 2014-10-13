@@ -63,6 +63,7 @@ class RequestAbstractServiceFactory implements AbstractFactoryInterface
         }
 
         // TODO ADD TOKEN SERVICE
+        return $request;
     }
     /**
      * Get rest configuration, if any
