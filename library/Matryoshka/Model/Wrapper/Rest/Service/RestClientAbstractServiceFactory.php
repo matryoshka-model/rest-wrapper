@@ -72,6 +72,7 @@ class RestClientAbstractServiceFactory implements AbstractFactoryInterface
         $httpClient = new Client();
         $request = new Request();
 
+        $request->setUri($config['url']);
         // Array of header
         if (isset($config['headers'])) {
 
