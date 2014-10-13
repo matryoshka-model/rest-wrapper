@@ -11,6 +11,7 @@ namespace Matryoshka\Model\Wrapper\Rest\Service;
 
 use Zend\Http\Client;
 use Matryoshka\Model\Wrapper\Rest\RestClient;
+use Zend\Http\Request;
 use Zend\ServiceManager\AbstractFactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
@@ -18,7 +19,7 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 /**
  * Class ApiAbstractServiceFactory
  */
-class ApiAbstractServiceFactory implements AbstractFactoryInterface
+class RestClientAbstractServiceFactory implements AbstractFactoryInterface
 {
     /**
      * @var string
@@ -68,15 +69,37 @@ class ApiAbstractServiceFactory implements AbstractFactoryInterface
         $config = $this->getConfig($serviceLocator)[$requestedName];
 
         $httpClient = new Client();
+        $request = new Request();
 
-        $restClient = new RestClient($httpClient, $config);
+        // Array of header
+        if (isset($config['headers'])) {
+            $request->setHeaders($config['headers']);
+        }
+
+        /*
+        // Array of int code valid
+        if (isset($config['codesStatusValid'])) {
+            $client->setCodesStatusValid($config['codesStatusValid']);
+        }
+        // Int 0/1
+        if (isset($config['returnType'])) {
+            $client->setReturnType($config['returnType']);
+        }
+        // string json/xml
+        if (isset($config['formatOutput'])) {
+            $client->setFormatOutput($config['formatOutput']);
+        }
+        */
+
+
+        $restClient = new RestClient($httpClient, $request);
 
         // Profiler
         if ($serviceLocator->has($config['profiler'])) {
             $restClient->setProfiler($serviceLocator->get($config['profiler']));
         }
 
-        return $client;
+        return $restClient;
     }
 
     /**

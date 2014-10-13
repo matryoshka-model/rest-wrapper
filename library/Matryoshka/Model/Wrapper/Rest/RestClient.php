@@ -30,11 +30,11 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
      * @param Client $httpClient
      * @param array $options
      */
-    function __construct(Client $httpClient, $request = null)
+    function __construct(Client $httpClient, Request $request = null)
     {
         $this->httpClient = $httpClient;
-
-        var_dump($options);
+        $this->defaultRequest = $request;
+        var_dump($request);
         die();
     }
 
