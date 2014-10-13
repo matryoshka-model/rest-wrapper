@@ -43,17 +43,18 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
     protected $formatResponse = self::FORMAT_OUTPUT_JSON;
 
     /**
-     * @var int
+     * @var int 0/1
      */
     protected $returnType = Json::TYPE_ARRAY;
 
     /**
      * @param Client $httpClient
-     * @param array $options
+     * @param Request $request
      */
-    function __construct(Client $httpClient, $options)
+    function __construct(Client $httpClient, Request $request)
     {
         $this->httpClient = $httpClient;
+        $this->defaultRequest = $request;
     }
 
     /**
@@ -146,9 +147,9 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
     protected function decodeBodyResponse(Response $response)
     {
         $bodyResponse = $response->getBody();
-        $formatOutput = $this->getFormatResponse();
+        $formatResponse = $this->getFormatResponse();
 
-        switch ($formatOutput) {
+        switch ($formatResponse) {
             case self::FORMAT_OUTPUT_JSON:
                 return Json::decode($bodyResponse, $this->getReturnType());
                 break;
@@ -159,7 +160,7 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
             default:
                 throw new Exception\InvalidFormatOutputException(sprintf(
                     'The format output "%s" is invalid',
-                    $formatOutput
+                    $formatResponse
                 ));
                 break;
         }

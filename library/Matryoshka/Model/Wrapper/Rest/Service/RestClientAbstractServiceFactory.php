@@ -8,13 +8,12 @@
  */
 namespace Matryoshka\Model\Wrapper\Rest\Service;
 
-use Matryoshka\Model\Wrapper\Rest\Client;
 use Matryoshka\Model\Wrapper\Rest\RestClient;
+use Zend\Http\Client;
 use Zend\Http\Headers;
 use Zend\Http\Request;
 use Zend\ServiceManager\AbstractFactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
-use ZendService\Api\Api;
 
 /**
  * Class ApiAbstractServiceFactory
