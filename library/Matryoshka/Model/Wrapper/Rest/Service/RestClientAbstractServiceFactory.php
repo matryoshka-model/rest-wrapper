@@ -11,6 +11,7 @@ namespace Matryoshka\Model\Wrapper\Rest\Service;
 
 use Zend\Http\Client;
 use Matryoshka\Model\Wrapper\Rest\RestClient;
+use Zend\Http\Headers;
 use Zend\Http\Request;
 use Zend\ServiceManager\AbstractFactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
@@ -73,7 +74,10 @@ class RestClientAbstractServiceFactory implements AbstractFactoryInterface
 
         // Array of header
         if (isset($config['headers'])) {
-            $request->setHeaders($config['headers']);
+
+            $headers = new Headers();
+            $headers->addHeaders($config['headers']);
+            $request->setHeaders($headers);
         }
 
         /*
