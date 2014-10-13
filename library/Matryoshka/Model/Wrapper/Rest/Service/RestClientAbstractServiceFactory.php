@@ -8,14 +8,12 @@
  */
 namespace Matryoshka\Model\Wrapper\Rest\Service;
 
-
-use Zend\Http\Client;
+use Matryoshka\Model\Wrapper\Rest\Client;
 use Matryoshka\Model\Wrapper\Rest\RestClient;
-use Zend\Http\Headers;
 use Zend\Http\Request;
 use Zend\ServiceManager\AbstractFactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
-
+use ZendService\Api\Api;
 
 /**
  * Class ApiAbstractServiceFactory
@@ -54,7 +52,6 @@ class RestClientAbstractServiceFactory implements AbstractFactoryInterface
             $serviceConfig
             && $urlNodeConfig
         );
-
     }
 
     /**
@@ -69,6 +66,7 @@ class RestClientAbstractServiceFactory implements AbstractFactoryInterface
     {
         $config = $this->getConfig($serviceLocator)[$requestedName];
 
+
         $httpClient = new Client();
         $request = new Request();
 
@@ -81,28 +79,27 @@ class RestClientAbstractServiceFactory implements AbstractFactoryInterface
             $request->setHeaders($headers);
         }
 
-        /*
+        $restClient = new RestClient($httpClient, $request);
+
         // Array of int code valid
         if (isset($config['codesStatusValid'])) {
-            $client->setCodesStatusValid($config['codesStatusValid']);
+            $restClient->setCodesStatusValid($config['codesStatusValid']);
         }
         // Int 0/1
         if (isset($config['returnType'])) {
-            $client->setReturnType($config['returnType']);
+            $restClient->setReturnType($config['returnType']);
         }
         // string json/xml
-        if (isset($config['formatOutput'])) {
-            $client->setFormatOutput($config['formatOutput']);
+        if (isset($config['formatResponse'])) {
+            $restClient->setFormatResponse($config['formatResponse']);
         }
-        */
-
-
-        $restClient = new RestClient($httpClient, $request);
-
         // Profiler
         if ($serviceLocator->has($config['profiler'])) {
             $restClient->setProfiler($serviceLocator->get($config['profiler']));
         }
+
+        var_dump($restClient);
+        die();
 
         return $restClient;
     }

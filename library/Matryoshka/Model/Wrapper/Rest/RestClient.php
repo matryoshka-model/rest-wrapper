@@ -5,11 +5,17 @@ use Matryoshka\Model\Wrapper\Rest\Profiler\ProfilerAwareInterface;
 use Matryoshka\Model\Wrapper\Rest\Profiler\ProfilerAwareTrait;
 use Zend\Http\Client;
 use Zend\Http\Request;
+use Zend\Http\Response;
+use Zend\Json\Json;
 use Zend\Stdlib\ResponseInterface;
+use ZendXml\Security;
 
 class RestClient implements RestClientInterface, ProfilerAwareInterface
 {
     use ProfilerAwareTrait;
+
+    const FORMAT_OUTPUT_JSON = 'json';
+    const FORMAT_OUTPUT_XML  = 'xml';
 
     /**
      * @var Client
@@ -27,69 +33,27 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
     protected $currentRequest;
 
     /**
+     * @var array
+     */
+    protected $codesStatusValid = [Response::STATUS_CODE_200];
+
+    /**
+     * @var string
+     */
+    protected $formatResponse = self::FORMAT_OUTPUT_JSON;
+
+    /**
+     * @var int
+     */
+    protected $returnType = Json::TYPE_ARRAY;
+
+    /**
      * @param Client $httpClient
      * @param array $options
      */
-    function __construct(Client $httpClient, Request $request = null)
+    function __construct(Client $httpClient, $options)
     {
         $this->httpClient = $httpClient;
-        $this->defaultRequest = $request;
-        var_dump($request);
-        die();
-    }
-
-    /**
-     * @return Request
-     */
-    public function getCurrentRequest()
-    {
-        return $this->currentRequest;
-    }
-
-    /**
-     * @param Request $currentRequest
-     */
-    public function setCurrentRequest(Request $currentRequest)
-    {
-        $this->currentRequest = $currentRequest;
-    }
-
-    /**
-     * @return Request
-     */
-    public function getDefaultRequest()
-    {
-        return $this->defaultRequest;
-    }
-
-    /**
-     * @param Request $defaultRequest
-     */
-    public function setDefaultRequest(Request $defaultRequest)
-    {
-        $this->defaultRequest = $defaultRequest;
-    }
-
-    /**
-     * @return Request|null
-     */
-    public function cloneDefaultRequest()
-    {
-        if (is_a($this->defaultRequest)) {
-            return clone $this->getDefaultRequest();
-        }
-        return null;
-    }
-
-    /**
-     * @return Request|null
-     */
-    public function cloneHttpClient()
-    {
-        if (is_a($this->httpClient)) {
-            return clone $this->httpClient();
-        }
-        return null;
     }
 
     /**
@@ -150,19 +114,153 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
      * @param Request $request
      * @return ResponseInterface
      */
-    public  function dispactRequest(Request $request)
+    public  function dispatchRequest(Request $request)
     {
         if ($this->profiler) {
             $this->getProfiler()->profilerStart($request);
         }
 
-        $response = $this->httpClient->dispatch($this->getCurrentRequest());
+        // Send request ad setting current request to default setting
+        $response = $this->httpClient->dispatch($request);
         $this->currentRequest = $this->cloneDefaultRequest();
 
         if ($this->profiler) {
             $this->getProfiler()->profilerFinish( $this->httpClient->getResponse());
         }
 
-        return $response;
+        $codesStatusValid = $this->getCodesStatusValid();
+        $codeStatusResponse = $response->getStatusCode();
+        $bodyDecodeResponse = $this->decodeBodyResponse($response);
+
+        if (in_array($codeStatusResponse, $codesStatusValid)) {
+            return $bodyDecodeResponse;
+        }
+
+        throw $this->getExceptionInvalidResponse($bodyDecodeResponse);
+    }
+    /**
+     * @param Response $response
+     * @return array|object
+     * @throws Exception\InvalidFormatOutputException
+     */
+    protected function decodeBodyResponse(Response $response)
+    {
+        $bodyResponse = $response->getBody();
+        $formatOutput = $this->getFormatResponse();
+
+        switch ($formatOutput) {
+            case self::FORMAT_OUTPUT_JSON:
+                return Json::decode($bodyResponse, $this->getReturnType());
+                break;
+            case self::FORMAT_OUTPUT_XML:
+                $xml = Security::scan($response->getBody());
+                return Json::decode(Json::encode((array) $xml), $this->getReturnType());
+                break;
+            default:
+                throw new Exception\InvalidFormatOutputException(sprintf(
+                    'The format output "%s" is invalid',
+                    $formatOutput
+                ));
+                break;
+        }
+    }
+
+    /**
+     * @param $bodyDecodeResponse
+     * @return Exception\InvalidResponseException
+     */
+    protected function getExceptionInvalidResponse($bodyDecodeResponse)
+    {
+        if (is_object($bodyDecodeResponse)) {
+            $bodyDecodeResponse = (array) $bodyDecodeResponse;
+        }
+
+        $exception = new Exception\InvalidResponseException($bodyDecodeResponse['detail']);
+        $exception->setStatus($bodyDecodeResponse['status']);
+        $exception->setType($bodyDecodeResponse['type']);
+        $exception->setTitle($bodyDecodeResponse['title']);
+
+        return $exception;
+    }
+
+    /**
+     * @return array
+     */
+    public function getCodesStatusValid()
+    {
+        return $this->codesStatusValid;
+    }
+
+    /**
+     * @param array $codesStatusValid
+     */
+    public function setCodesStatusValid($codesStatusValid)
+    {
+        $this->codesStatusValid = $codesStatusValid;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFormatResponse()
+    {
+        return $this->formatResponse;
+    }
+
+    /**
+     * @param string $formatResponse
+     */
+    public function setFormatResponse($formatResponse)
+    {
+        $this->formatResponse = $formatResponse;
+    }
+
+    /**
+     * @return int
+     */
+    public function getReturnType()
+    {
+        return $this->returnType;
+    }
+
+    /**
+     * @param int $returnType
+     */
+    public function setReturnType($returnType)
+    {
+        $this->returnType = $returnType;
+    }
+
+
+    /**
+     * @return Request
+     */
+    public function getCurrentRequest()
+    {
+        return $this->currentRequest;
+    }
+
+    /**
+     * @param Request $currentRequest
+     */
+    public function setCurrentRequest(Request $currentRequest)
+    {
+        $this->currentRequest = $currentRequest;
+    }
+
+    /**
+     * @return Request|null
+     */
+    public function cloneDefaultRequest()
+    {
+        return clone $this->getDefaultRequest();
+    }
+
+    /**
+     * @return Request|null
+     */
+    public function cloneHttpClient()
+    {
+        return clone $this->httpClient();
     }
 }
