@@ -10,6 +10,7 @@ namespace Matryoshka\Model\Wrapper\Rest\Service;
 
 use Matryoshka\Model\Wrapper\Rest\Client;
 use Matryoshka\Model\Wrapper\Rest\RestClient;
+use Zend\Http\Headers;
 use Zend\Http\Request;
 use Zend\ServiceManager\AbstractFactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
@@ -97,9 +98,6 @@ class RestClientAbstractServiceFactory implements AbstractFactoryInterface
         if ($serviceLocator->has($config['profiler'])) {
             $restClient->setProfiler($serviceLocator->get($config['profiler']));
         }
-
-        var_dump($restClient);
-        die();
 
         return $restClient;
     }
