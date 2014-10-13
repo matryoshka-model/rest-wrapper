@@ -84,7 +84,7 @@ class RestClientAbstractServiceFactory implements AbstractFactoryInterface
             $restClient->setFormatResponse($config['formatResponse']);
         }
         // Profiler
-        if ($serviceLocator->has($config['profiler'])) {
+        if (isset($config['profiler']) && $serviceLocator->has($config['profiler'])) {
             $restClient->setProfiler($serviceLocator->get($config['profiler']));
         }
 
