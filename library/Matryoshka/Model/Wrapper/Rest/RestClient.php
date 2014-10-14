@@ -62,7 +62,7 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
      * @param $id
      * @param array $data
      * @param array $query
-     *
+     * @return array|object
      */
     public function put($id, array $data, array $query = [])
     {
@@ -71,12 +71,13 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
         $request->getUri()->setFragment($id);
         $request->setContent($data);
 
-        $this->dispatchRequest($request);
+        return $this->dispatchRequest($request);
     }
 
     /**
      * @param null $id
      * @param array $query
+     * @return array|object
      */
     public function get($id = null, array $query = [])
     {
@@ -89,11 +90,12 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
             $request->getUri()->setQuery($query);
         }
 
-        $this->dispatchRequest($request);
+        return $this->dispatchRequest($request);
     }
 
     /**
      * @param $id
+     * @return array|object
      */
     public function delete($id)
     {
@@ -101,12 +103,13 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
         $request->setMethod(Request::METHOD_DELETE);
         $request->getUri()->setFragment($id);
 
-        $this->dispatchRequest($request);
+        return $this->dispatchRequest($request);
     }
 
     /**
      * @param array $data
      * @param array $query
+     * @return array|object
      */
     public function post(array $data, array $query = [])
     {
@@ -118,12 +121,12 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
             $request->setQuery($query);
         }
 
-        $this->dispatchRequest($request);
+        return $this->dispatchRequest($request);
     }
 
     /**
      * @param Request $request
-     * @return ResponseInterface
+     * @return array|object
      */
     public  function dispatchRequest(Request $request)
     {
