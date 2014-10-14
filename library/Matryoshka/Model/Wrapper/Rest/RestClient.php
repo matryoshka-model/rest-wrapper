@@ -67,8 +67,10 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
     {
         $request = $this->getCurrentRequest();
         $request->setMethod(Request::METHOD_PUT);
+        $request->getUri()->setFragment($id);
+        $request->setContent($data);
 
-        $this->dispactRequest($request);
+        $this->dispatchRequest($request);
     }
 
     /**
@@ -79,8 +81,14 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
     {
         $request = $this->getCurrentRequest();
         $request->setMethod(Request::METHOD_GET);
+        if ($id) {
+            $request->getUri()->setFragment($id);
+        }
+        if ($query) {
+            $request->getUri()->setQuery($query);
+        }
 
-        $this->dispactRequest($request);
+        $this->dispatchRequest($request);
     }
 
     /**
@@ -90,8 +98,9 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
     {
         $request = $this->getCurrentRequest();
         $request->setMethod(Request::METHOD_DELETE);
+        $request->getUri()->setFragment($id);
 
-        $this->dispactRequest($request);
+        $this->dispatchRequest($request);
     }
 
     /**
@@ -108,7 +117,7 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
             $request->setQuery($query);
         }
 
-        $this->dispactRequest($request);
+        $this->dispatchRequest($request);
     }
 
     /**

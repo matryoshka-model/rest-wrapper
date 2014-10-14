@@ -37,17 +37,15 @@ class Profiler implements ProfilerInterface
     public function profilerStart($target)
     {
         $profileInformation = array(
-            'headers' => '',
-            'uri' => null,
-            'body' => null,
+            'request' => null,
+            'response' => null,
             'start' => microtime(true),
             'end' => null,
             'elapse' => null
         );
 
         if ($target instanceof Request) {
-            $profileInformation['headers'] = $target->getHeaders();
-            $profileInformation['uri'] = $target->getUri();
+            $profileInformation['request'] = $target;
         }
 
         $this->profiles[$this->currentIndex] = $profileInformation;
@@ -66,7 +64,7 @@ class Profiler implements ProfilerInterface
         $current['elapse'] = $current['end'] - $current['start'];
 
         if ($target instanceof Response) {
-            $current['body'] = $target->getBody();
+            $current['response'] = $target;
         }
 
         $this->currentIndex++;
