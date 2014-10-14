@@ -71,6 +71,12 @@ class Profiler implements ProfilerInterface
         return $this;
     }
 
-
+    /**
+     * @return array
+     */
+    public function getProfiles()
+    {
+        return $this->profiles;
+    }
 
 } 
