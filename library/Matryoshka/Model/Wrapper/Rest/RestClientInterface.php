@@ -2,17 +2,25 @@
 namespace Matryoshka\Model\Wrapper\Rest;
 
 
-use Matryoshka\Model\ModelInterface;
-use Zend\Stdlib\RequestInterface;
-
 interface RestClientInterface
 {
-    public function put($id, array $data, array $query = []);
+    /**
+     * @return string
+     */
+    public function getResourceName();
+
+    public function delete($id = null, array $query = []);
 
     public function get($id = null, array $query = []);
 
-    public function delete($id);
+    public function head($id = null, array $query = []);
+
+    public function options(array $query = []);
+
+    public function patch($id = null, array $data, array $query = []);
 
     public function post(array $data, array $query = []);
 
-} 
+    public function put($id, array $data, array $query = []);
+
+}
