@@ -9,8 +9,8 @@ use Zend\Http\Response;
 use Zend\Json\Json;
 use Zend\Stdlib\ResponseInterface;
 use ZendXml\Security;
-use Matryoshka\Model\Wrapper\Rest\UriNamingStrategy\UriNamingStrategyInterface;
-use Matryoshka\Model\Wrapper\Rest\UriNamingStrategy\DefaultStrategy;
+use Matryoshka\Model\Wrapper\Rest\UriResourceStrategy\DefaultStrategy;
+use Matryoshka\Model\Wrapper\Rest\UriResourceStrategy\UriResourceStrategyInterface;
 
 class RestClient implements RestClientInterface, ProfilerAwareInterface
 {
@@ -32,7 +32,7 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
     /**
      * @var UriNamingStrategyInterface
      */
-    protected $uriNamingStrategy;
+    protected $uriResourceStrategy;
 
     /**
      * @var Client
@@ -42,7 +42,7 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
     /**
      * @var Request
      */
-    protected $defaultRequest;
+    protected $baseRequest;
 
     /**
      * @var array
@@ -78,12 +78,12 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
      * @param Client $httpClient
      * @param Request $request
      */
-    public function __construct($resourceName, $apiBaseUrl, Client $httpClient = null, Request $defaultRequest = null)
+    public function __construct($resourceName, $apiBaseUrl, Client $httpClient = null, Request $baseRequest = null)
     {
         $this->resourceName = $resourceName;
         $this->apiBaseUrl = rtrim($apiBaseUrl, '/');
         $this->httpClient = $httpClient ? $httpClient : new Client();
-        $this->defaultRequest = $defaultRequest ? $defaultRequest : $this->httpClient->getRequest();
+        $this->baseRequest = $baseRequest ? $baseRequest : $this->httpClient->getRequest();
     }
 
     public function getResourceName()
@@ -160,9 +160,10 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
      */
     public function prepareRequest($method, $id = null, array $data = [], array $query = [])
     {
-        $request = $this->cloneDefaultRequest();
+        $request = $this->cloneBaseRequest();
         $request->setMethod($method);
-        $request->setUri($this->apiBaseUrl . $this->getUriNamingStrategy()->getResourcePath($this->resourceName, $id));
+        $this->getUriResourceStrategy()->configureUri($request->getUri(), $this->responseFormat, $id);
+
 
         $queryParams = $request->getQuery();
         foreach ($query as $name => $value) {
@@ -277,14 +278,14 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
     }
 
     /**
-     * @return UriNamingStrategyInterface
+     * @return UriResourceStrategyInterface
      */
-    public function getUriNamingStrategy()
+    public function getUriResourceStrategy()
     {
-        if (null === $this->uriNamingStrategy) {
-            $this->uriNamingStrategy = new DefaultStrategy();
+        if (null === $this->uriResourceStrategy) {
+            $this->uriResourceStrategy = new DefaultStrategy();
         }
-        return $this->uriNamingStrategy;
+        return $this->uriResourceStrategy;
     }
 
     /**
@@ -293,7 +294,7 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
      */
     public function setUriNamingStrategy(UriNamingStrategyInterface $strategy)
     {
-        $this->uriNamingStrategy = $strategy;
+        $this->uriResourceStrategy = $strategy;
         return $this;
     }
 
@@ -367,15 +368,23 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
     }
 
 
-    public function getDefaultRequest()
+    public function getBaseRequest()
     {
-        return $this->defaultRequest;
+        return $this->baseRequest;
     }
 
-    public function setDefaultRequest(Request $request)
+    public function setBaseRequest(Request $request)
     {
-        $this->defaultRequest = $request;
+        $this->baseRequest = $request;
         return $this;
+    }
+
+    /**
+     * @return Request
+     */
+    public function cloneBaseRequest()
+    {
+        return unserialize(serialize($this->baseRequest));
     }
 
     /**
