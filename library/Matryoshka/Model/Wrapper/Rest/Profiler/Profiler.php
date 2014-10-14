@@ -45,7 +45,12 @@ class Profiler implements ProfilerInterface
         );
 
         if ($target instanceof Request) {
-            $profileInformation['request'] = $target;
+            $profileInformation['request']['uri'] = $target->getUriString();
+            $profileInformation['request']['headers'] = $target->getHeaders();
+            $profileInformation['request']['method'] = $target->getMethod();
+            $profileInformation['request']['post'] = $target->getPost();
+            $profileInformation['request']['query'] = $target->getPost();
+            $profileInformation['request']['content'] = $target->getContent();
         }
 
         $this->profiles[$this->currentIndex] = $profileInformation;
@@ -64,7 +69,7 @@ class Profiler implements ProfilerInterface
         $current['elapse'] = $current['end'] - $current['start'];
 
         if ($target instanceof Response) {
-            $current['response'] = $target;
+            $current['response']['content'] = $target->getBody();
         }
 
         $this->currentIndex++;
