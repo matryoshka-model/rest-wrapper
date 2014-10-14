@@ -286,7 +286,7 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
      * @param UriNamingStrategyInterface $strategy
      * @return $this
      */
-    public function setUriNamingStrategy(UriNamingStrategyInterface $strategy)
+    public function setUriResourceStrategy(UriNamingStrategyInterface $strategy)
     {
         $this->uriResourceStrategy = $strategy;
         return $this;

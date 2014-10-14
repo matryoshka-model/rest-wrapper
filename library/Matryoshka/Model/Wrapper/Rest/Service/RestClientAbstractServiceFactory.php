@@ -23,7 +23,7 @@ class RestClientAbstractServiceFactory implements AbstractFactoryInterface
     /**
      * @var string
      */
-    protected $configKey = 'rest-api'; // TODO: choose correct config node name
+    protected $configKey = 'matryoshka-rest'; // TODO: choose correct config node name
 
     /**
      * @var array
@@ -46,11 +46,10 @@ class RestClientAbstractServiceFactory implements AbstractFactoryInterface
         }
 
         $serviceConfig = $this->checkHasRequestedNameConfig($config, $requestedName);
-        $requestNodeConfig = $this->checkHasRequestedNameConfig($config, $requestedName, $serviceLocator);
 
         return (
             $serviceConfig
-            && $requestNodeConfig
+            && !empty($config[$requestedName]['resource_name'])
         );
     }
 
@@ -66,22 +65,36 @@ class RestClientAbstractServiceFactory implements AbstractFactoryInterface
     {
         $config = $this->getConfig($serviceLocator)[$requestedName];
 
-        $httpClient = new Client();
-        $request = $serviceLocator->get($config['request']);
 
-        $restClient = new RestClient($httpClient, $request);
+        $resourceName = $config['resource_name'];
+
+        $httpClient = isset($config['http_client']) && $serviceLocator->has($config['http_client']) ?
+                $serviceLocator->get($config['http_client']) : null;
+
+        $baseRequest = isset($config['base_request']) && $serviceLocator->has($config['base_request']) ?
+                $serviceLocator->get($config['base_request']) : null;
+
+        $restClient = new RestClient($resourceName, $httpClient, $baseRequest);
+
+        if (isset($config['uri_resource_strategy']) && $serviceLocator->has($config['uri_resource_strategy'])) {
+            $restClient->setUriResourceStrategy($serviceLocator->get($config['uri_resource_strategy']));
+        }
 
         // Array of int code valid
-        if (isset($config['codesStatusValid'])) {
-            $restClient->setCodesStatusValid($config['codesStatusValid']);
+        if (isset($config['valid_status_code']) && is_array($config['valid_status_code'])) {
+            $restClient->setValidStatusCodes($config['valid_status_code']);
         }
         // Int 0/1
-        if (isset($config['returnType'])) {
-            $restClient->setReturnType($config['returnType']);
+        if (isset($config['return_type'])) {
+            $restClient->setReturnType($config['return_type']);
         }
         // string json/xml
-        if (isset($config['formatResponse'])) {
-            $restClient->setFormatResponse($config['formatResponse']);
+        if (isset($config['request_format'])) {
+            $restClient->setRequestFormat($config['request_format']);
+        }
+        // string json/xml
+        if (isset($config['response_format'])) {
+            $restClient->setResponseFormat($config['response_format']);
         }
         // Profiler
         if (isset($config['profiler']) && $serviceLocator->has($config['profiler'])) {
@@ -136,23 +149,4 @@ class RestClientAbstractServiceFactory implements AbstractFactoryInterface
         return false;
     }
 
-    /**
-     * Check if has node config request
-     *
-     * @param $config
-     * @param $requestedName
-     * @param ServiceLocatorInterface $serviceLocator
-     * @return bool
-     */
-    public function checkHasDefaultRequestConfig($config, $requestedName, ServiceLocatorInterface $serviceLocator)
-    {
-        if (isset($config[$requestedName]['request'])
-            && is_string($config[$requestedName]['request'])
-            && !empty($config[$requestedName]['request'])
-            && $serviceLocator->has($config[$requestedName]['request'])
-        ) {
-            return true;
-        }
-        return false;
-    }
 }
