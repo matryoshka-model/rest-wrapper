@@ -264,9 +264,7 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
      */
     public function cloneDefaultRequest()
     {
-        $request = new Request();
-        $request->fromString($this->defaultRequest->toString());
-        return $request;
+        return unserialize(serialize($this->defaultRequest));
     }
 
     /**
