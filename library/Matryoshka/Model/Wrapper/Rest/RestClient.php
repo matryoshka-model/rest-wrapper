@@ -55,6 +55,7 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
     {
         $this->httpClient = $httpClient;
         $this->defaultRequest = $request;
+        $this->currentRequest = $this->cloneDefaultRequest();
     }
 
     /**
@@ -263,7 +264,9 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
      */
     public function cloneDefaultRequest()
     {
-        return clone $this->getDefaultRequest();
+        $request = new Request();
+        $request->fromString($this->defaultRequest->toString());
+        return $request;
     }
 
     /**
