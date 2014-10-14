@@ -25,11 +25,6 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
     protected $resourceName;
 
     /**
-     * @var string
-     */
-    protected $apiBaseUrl;
-
-    /**
      * @var UriNamingStrategyInterface
      */
     protected $uriResourceStrategy;
@@ -78,10 +73,9 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
      * @param Client $httpClient
      * @param Request $request
      */
-    public function __construct($resourceName, $apiBaseUrl, Client $httpClient = null, Request $baseRequest = null)
+    public function __construct($resourceName, Client $httpClient = null, Request $baseRequest = null)
     {
         $this->resourceName = $resourceName;
-        $this->apiBaseUrl = rtrim($apiBaseUrl, '/');
         $this->httpClient = $httpClient ? $httpClient : new Client();
         $this->baseRequest = $baseRequest ? $baseRequest : $this->httpClient->getRequest();
     }
