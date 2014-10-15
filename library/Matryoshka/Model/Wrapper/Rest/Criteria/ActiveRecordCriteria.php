@@ -1,8 +1,16 @@
 <?php
+/**
+ * REST matryoshka wrapper
+ *
+ * @link        https://github.com/matryoshka-model/rest-wrapper
+ * @copyright   Copyright (c) 2014, Ripa Club
+ * @license     http://opensource.org/licenses/BSD-2-Clause Simplified BSD License
+ */
 namespace Matryoshka\Model\Wrapper\Rest\Criteria;
 
 use Matryoshka\Model\Criteria\ActiveRecord\AbstractCriteria;
 use Matryoshka\Model\ModelInterface;
+use Matryoshka\Model\Wrapper\Rest\RestClient;
 
 /**
  * Class ActiveRecordCriteria
@@ -13,10 +21,13 @@ class ActiveRecordCriteria extends AbstractCriteria
 {
     /**
      * @param ModelInterface $model
+     * @return array|object
      */
     public function applyDelete(ModelInterface $model)
     {
-        // TODO: Implement applyDelete() method.
+        /* @var $client RestClient */
+        $client = $model->getDataGateway();
+        return $client->delete($this->getId());
     }
 
     /**
@@ -26,19 +37,28 @@ class ActiveRecordCriteria extends AbstractCriteria
      */
     public function apply(ModelInterface $model)
     {
-        // TODO: Implement applyDelete() method.
+        /* @var $client RestClient */
+        $client = $model->getDataGateway();
+        return $client->get($this->getId());
     }
 
     /**
      * @param ModelInterface $model
      * @param array $data
+     * @return int
      */
     public function applyWrite(ModelInterface $model, array &$data)
     {
-        /** @var  $client \Matryoshka\Model\Wrapper\Rest\Client */
+        /* @var $client RestClient */
         $client = $model->getDataGateway();
-        $client->setMethod('POST');
-        $client->sendRequest();
-    }
 
-} 
+        if ($this->id) {
+            $client->put($this->id, $data);
+        } else {
+            $client->post($data);
+        }
+
+        //FIXME: handle result and, if POST, inject the new id into data
+        return 1;
+    }
+}

@@ -14,6 +14,12 @@
         "satooshi/php-coveralls": "dev-master",
         "zendframework/zendframework": "dev-master"
     },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.5.x-dev",
+            "dev-develop": "0.6.x-dev"
+        }
+    },
     "authors": [
         {
             "name": "Leonardo Grasso",
@@ -31,12 +37,6 @@
             "homepage": "http://github.com/visa4"
         }
     ],
-    "extra": {
-        "branch-alias": {
-            "dev-master": "0.5.x-dev",
-            "dev-develop": "0.6.x-dev"
-        }
-    },
     "autoload": {
         "psr-0": {
             "Matryoshka": "library/",

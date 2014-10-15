@@ -1,4 +1,11 @@
 <?php
+/**
+ * REST matryoshka wrapper
+ *
+ * @link        https://github.com/matryoshka-model/rest-wrapper
+ * @copyright   Copyright (c) 2014, Ripa Club
+ * @license     http://opensource.org/licenses/BSD-2-Clause Simplified BSD License
+ */
 namespace Matryoshka\Model\Wrapper\Rest\Profiler;
 
 use Zend\Http\Client;
@@ -13,10 +20,6 @@ use Zend\Http\Response;
 class Profiler implements ProfilerInterface
 {
     /**
-     * ATTRIBUTE
-     ******************************************************************************************************************/
-
-    /**
      * @var array
      */
     protected $profiles = [];
@@ -27,22 +30,18 @@ class Profiler implements ProfilerInterface
     protected $currentIndex = 0;
 
     /**
-     * METHOD
-     ******************************************************************************************************************/
-
-    /**
      * @param $target
      * @return self
      */
     public function profilerStart($target)
     {
-        $profileInformation = array(
+        $profileInformation = [
             'request' => null,
             'response' => null,
             'start' => microtime(true),
             'end' => null,
             'elapse' => null
-        );
+        ];
 
         if ($target instanceof Request) {
             $profileInformation['request']['uri'] = $target->getUriString();
@@ -83,5 +82,4 @@ class Profiler implements ProfilerInterface
     {
         return $this->profiles;
     }
-
-} 
+}

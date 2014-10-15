@@ -1,21 +1,42 @@
 <?php
+/**
+ * REST matryoshka wrapper
+ *
+ * @link        https://github.com/matryoshka-model/rest-wrapper
+ * @copyright   Copyright (c) 2014, Ripa Club
+ * @license     http://opensource.org/licenses/BSD-2-Clause Simplified BSD License
+ */
 namespace Matryoshka\Model\Wrapper\Rest;
 
 use Matryoshka\Model\Wrapper\Rest\Profiler\ProfilerAwareInterface;
 use Matryoshka\Model\Wrapper\Rest\Profiler\ProfilerAwareTrait;
+use Matryoshka\Model\Wrapper\Rest\UriResourceStrategy\DefaultStrategy;
+use Matryoshka\Model\Wrapper\Rest\UriResourceStrategy\UriResourceStrategyInterface;
 use Zend\Http\Client;
 use Zend\Http\Request;
 use Zend\Http\Response;
 use Zend\Json\Json;
-use Zend\Stdlib\ResponseInterface;
 use ZendXml\Security;
 
+/**
+ * Class RestClient
+ */
 class RestClient implements RestClientInterface, ProfilerAwareInterface
 {
     use ProfilerAwareTrait;
 
-    const FORMAT_OUTPUT_JSON = 'json';
-    const FORMAT_OUTPUT_XML  = 'xml';
+    const FORMAT_JSON = 'json';
+    const FORMAT_XML  = 'xml';
+
+    /**
+     * @var string
+     */
+    protected $resourceName;
+
+    /**
+     * @var UriResourceStrategyInterface
+     */
+    protected $uriResourceStrategy;
 
     /**
      * @var Client
@@ -25,22 +46,22 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
     /**
      * @var Request
      */
-    protected $defaultRequest;
-
-    /**
-     * @var Request
-     */
-    protected $currentRequest;
+    protected $baseRequest;
 
     /**
      * @var array
      */
-    protected $codesStatusValid = [Response::STATUS_CODE_200];
+    protected $validStatusCodes = [Response::STATUS_CODE_200];
 
     /**
      * @var string
      */
-    protected $formatResponse = self::FORMAT_OUTPUT_JSON;
+    protected $responseFormat = self::FORMAT_JSON;
+
+    /**
+     * @var string
+     */
+    protected $requestFormat = self::FORMAT_JSON;
 
     /**
      * @var int 0/1
@@ -48,110 +69,183 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
     protected $returnType = Json::TYPE_ARRAY;
 
     /**
-     * @param Client $httpClient
-     * @param Request $request
+     * @var Request
      */
-    function __construct(Client $httpClient, Request $request)
+    protected $lastRequest = null;
+
+    /**
+     * @var Response
+     */
+    protected $lastResponse = null;
+
+    /**
+     * @param $resourceName
+     * @param Client $httpClient
+     * @param Request $baseRequest
+     */
+    public function __construct($resourceName, Client $httpClient = null, Request $baseRequest = null)
     {
-        $this->httpClient = $httpClient;
-        $this->defaultRequest = $request;
-        $this->currentRequest = $this->cloneDefaultRequest();
+        $this->resourceName = $resourceName;
+        $this->httpClient = $httpClient ? $httpClient : new Client();
+        $this->baseRequest = $baseRequest ? $baseRequest : $this->httpClient->getRequest();
     }
 
     /**
-     * @param $id
-     * @param array $data
-     * @param array $query
-     * @return array|object
+     * {@inheritdoc}
      */
-    public function put($id, array $data, array $query = [])
+    public function getResourceName()
     {
-        $request = $this->getCurrentRequest();
-        $request->setMethod(Request::METHOD_PUT);
-        $request->getUri()->setFragment($id);
-        $request->setContent($data);
+        return $this->resourceName;
+    }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function delete($id = null, array $query = [])
+    {
+        $request = $this->prepareRequest(Request::METHOD_DELETE, $id, [], $query);
         return $this->dispatchRequest($request);
     }
 
     /**
-     * @param null $id
-     * @param array $query
-     * @return array|object
+     * {@inheritdoc}
      */
     public function get($id = null, array $query = [])
     {
-        $request = $this->getCurrentRequest();
-        $request->setMethod(Request::METHOD_GET);
-        if ($id) {
-            $request->getUri()->setFragment($id);
-        }
-        if ($query) {
-            $request->getUri()->setQuery($query);
-        }
-
+        $request = $this->prepareRequest(Request::METHOD_GET, $id, [], $query);
         return $this->dispatchRequest($request);
     }
 
     /**
-     * @param $id
-     * @return array|object
+     * {@inheritdoc}
      */
-    public function delete($id)
+    public function head($id = null, array $query = [])
     {
-        $request = $this->getCurrentRequest();
-        $request->setMethod(Request::METHOD_DELETE);
-        $request->getUri()->setFragment($id);
-
+        $request = $this->prepareRequest(Request::METHOD_HEAD, $id, [], $query);
         return $this->dispatchRequest($request);
     }
 
     /**
-     * @param array $data
-     * @param array $query
-     * @return array|object
+     * {@inheritdoc}
+     */
+    public function options(array $query = [])
+    {
+        $request = $this->prepareRequest(Request::METHOD_OPTIONS, null, [], $query);
+        return $this->dispatchRequest($request);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function patch($id = null, array $data, array $query = [])
+    {
+        $request = $this->prepareRequest(Request::METHOD_PATCH, $id, $data, $query);
+        return $this->dispatchRequest($request);
+    }
+
+    /**
+     * {@inheritdoc}
      */
     public function post(array $data, array $query = [])
     {
-        $request = $this->getCurrentRequest();
-        // Settings
-        $request->setMethod(Request::METHOD_POST);
-        $request->setContent($data);
-        if ($query) {
-            $request->setQuery($query);
-        }
-
+        $request = $this->prepareRequest(Request::METHOD_POST, null, $data, $query);
         return $this->dispatchRequest($request);
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function put($id, array $data, array $query = [])
+    {
+        $request = $this->prepareRequest(Request::METHOD_PUT, $id, $data, $query);
+        return $this->dispatchRequest($request);
+    }
+
+
+    /**
+     * @param string $method
+     * @param string $id
+     * @param array $query
+     * @param array $data
+     * @return Request
+     */
+    public function prepareRequest($method, $id = null, array $data = [], array $query = [])
+    {
+        $request = $this->cloneBaseRequest();
+        $request->setMethod($method);
+        $this->getUriResourceStrategy()->configureUri($request->getUri(), $this->responseFormat, $id);
+
+
+        $queryParams = $request->getQuery();
+        foreach ($query as $name => $value) {
+            $queryParams->set($name, $value);
+        }
+
+        if (!empty($data)) {
+            $request->setContent($this->encodeBodyRequest($data));
+        }
+
+        return $request;
+    }
+
 
     /**
      * @param Request $request
      * @return array|object
      */
-    public  function dispatchRequest(Request $request)
+    public function dispatchRequest(Request $request)
     {
         if ($this->profiler) {
             $this->getProfiler()->profilerStart($request);
         }
 
-        // Send request ad setting current request to default setting
+        // Send request
+        /** @var $response Response */
         $response = $this->httpClient->dispatch($request);
-        $this->currentRequest = $this->cloneDefaultRequest();
+        $this->lastRequest = $request;
+        $this->lastResponse = $response;
 
         if ($this->profiler) {
-            $this->getProfiler()->profilerFinish( $this->httpClient->getResponse());
+            $this->getProfiler()->profilerFinish($this->httpClient->getResponse());
         }
 
-        $codesStatusValid = $this->getCodesStatusValid();
-        $codeStatusResponse = $response->getStatusCode();
-        $bodyDecodeResponse = $this->decodeBodyResponse($response);
+        $validStatusCodes = $this->getValidStatusCodes();
+        $responseStatusCode = $response->getStatusCode();
+        $decodedResponse = $this->decodeBodyResponse($response);
 
-        if (in_array($codeStatusResponse, $codesStatusValid)) {
-            return $bodyDecodeResponse;
+        if (in_array($responseStatusCode, $validStatusCodes)) {
+            return $decodedResponse;
         }
 
-        throw $this->getExceptionInvalidResponse($bodyDecodeResponse);
+        throw $this->getInvalidResponseException($decodedResponse);
     }
+
+    /**
+     * @param array $data
+     * @return string
+     */
+    protected function encodeBodyRequest(array $data)
+    {
+        $requestFormat = $this->getRequestFormat();
+
+        switch ($requestFormat) {
+            case self::FORMAT_JSON:
+                $bodyRequest = Json::encode($data);
+                break;
+            case self::FORMAT_XML:
+                // TODO
+//                 break;
+            default:
+                throw new Exception\InvalidFormatOutputException(sprintf(
+                    'The format "%s" is invalid',
+                    $requestFormat
+                ));
+                break;
+        }
+
+        return $bodyRequest;
+    }
+
     /**
      * @param Response $response
      * @return array|object
@@ -160,20 +254,20 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
     protected function decodeBodyResponse(Response $response)
     {
         $bodyResponse = $response->getBody();
-        $formatResponse = $this->getFormatResponse();
+        $responseFormat = $this->getResponseFormat();
 
-        switch ($formatResponse) {
-            case self::FORMAT_OUTPUT_JSON:
+        switch ($responseFormat) {
+            case self::FORMAT_JSON:
                 return Json::decode($bodyResponse, $this->getReturnType());
                 break;
-            case self::FORMAT_OUTPUT_XML:
+            case self::FORMAT_XML:
                 $xml = Security::scan($response->getBody());
                 return Json::decode(Json::encode((array) $xml), $this->getReturnType());
                 break;
             default:
                 throw new Exception\InvalidFormatOutputException(sprintf(
-                    'The format output "%s" is invalid',
-                    $formatResponse
+                    'The format "%s" is invalid',
+                    $responseFormat
                 ));
                 break;
         }
@@ -183,7 +277,7 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
      * @param $bodyDecodeResponse
      * @return Exception\InvalidResponseException
      */
-    protected function getExceptionInvalidResponse($bodyDecodeResponse)
+    protected function getInvalidResponseException($bodyDecodeResponse)
     {
         if (is_object($bodyDecodeResponse)) {
             $bodyDecodeResponse = (array) $bodyDecodeResponse;
@@ -198,35 +292,79 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
     }
 
     /**
-     * @return array
+     * @return UriResourceStrategyInterface
      */
-    public function getCodesStatusValid()
+    public function getUriResourceStrategy()
     {
-        return $this->codesStatusValid;
+        if (null === $this->uriResourceStrategy) {
+            $this->uriResourceStrategy = new DefaultStrategy();
+        }
+        return $this->uriResourceStrategy;
     }
 
     /**
-     * @param array $codesStatusValid
+     * @param UriResourceStrategyInterface $strategy
+     * @return $this
      */
-    public function setCodesStatusValid($codesStatusValid)
+    public function setUriResourceStrategy(UriResourceStrategyInterface $strategy)
     {
-        $this->codesStatusValid = $codesStatusValid;
+        $this->uriResourceStrategy = $strategy;
+        return $this;
+    }
+
+
+    /**
+     * @return array
+     */
+    public function getValidStatusCodes()
+    {
+        return $this->validStatusCodes;
+    }
+
+    /**
+     * @param array $validStatusCodes
+     * @return $this
+     */
+    public function setValidStatusCodes(array $validStatusCodes)
+    {
+        $this->validStatusCodes = $validStatusCodes;
+        return $this;
     }
 
     /**
      * @return string
      */
-    public function getFormatResponse()
+    public function getResponseFormat()
     {
-        return $this->formatResponse;
+        return $this->responseFormat;
     }
 
     /**
-     * @param string $formatResponse
+     * @param $responseFormat
+     * @return $this
      */
-    public function setFormatResponse($formatResponse)
+    public function setResponseFormat($responseFormat)
     {
-        $this->formatResponse = $formatResponse;
+        $this->responseFormat = $responseFormat;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRequestFormat()
+    {
+        return $this->requestFormat;
+    }
+
+    /**
+     * @param $requestFormat
+     * @return $this
+     */
+    public function setRequestFormat($requestFormat)
+    {
+        $this->requestFormat = $requestFormat;
+        return $this;
     }
 
     /**
@@ -238,43 +376,54 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
     }
 
     /**
-     * @param int $returnType
+     * @param $returnType
+     * @return $this
      */
     public function setReturnType($returnType)
     {
         $this->returnType = $returnType;
+        return $this;
     }
-
 
     /**
      * @return Request
      */
-    public function getCurrentRequest()
+    public function getBaseRequest()
     {
-        return $this->currentRequest;
+        return $this->baseRequest;
     }
 
     /**
-     * @param Request $currentRequest
+     * @param Request $request
+     * @return $this
      */
-    public function setCurrentRequest(Request $currentRequest)
+    public function setBaseRequest(Request $request)
     {
-        $this->currentRequest = $currentRequest;
+        $this->baseRequest = $request;
+        return $this;
     }
 
     /**
-     * @return Request|null
+     * @return Request
      */
-    public function cloneDefaultRequest()
+    public function cloneBaseRequest()
     {
-        return unserialize(serialize($this->defaultRequest));
+        return unserialize(serialize($this->baseRequest));
     }
 
     /**
-     * @return Request|null
+     * @return Request
      */
-    public function cloneHttpClient()
+    public function getLastRequest()
     {
-        return clone $this->httpClient();
+        return $this->lastRequest;
+    }
+
+    /**
+     * @return Response
+     */
+    public function getLastResponse()
+    {
+        return $this->lastResponse;
     }
 }
