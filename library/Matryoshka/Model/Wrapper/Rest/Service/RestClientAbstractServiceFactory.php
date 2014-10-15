@@ -148,5 +148,4 @@ class RestClientAbstractServiceFactory implements AbstractFactoryInterface
         }
         return false;
     }
-
 }

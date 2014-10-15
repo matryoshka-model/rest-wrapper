@@ -1,4 +1,11 @@
 <?php
+/**
+ * REST matryoshka wrapper
+ *
+ * @link        https://github.com/matryoshka-model/rest-wrapper
+ * @copyright   Copyright (c) 2014, Ripa Club
+ * @license     http://opensource.org/licenses/BSD-2-Clause Simplified BSD License
+ */
 namespace Matryoshka\Model\Wrapper\Rest\Criteria;
 
 use Matryoshka\Model\Criteria\ActiveRecord\AbstractCriteria;
@@ -14,6 +21,7 @@ class ActiveRecordCriteria extends AbstractCriteria
 {
     /**
      * @param ModelInterface $model
+     * @return array|object
      */
     public function applyDelete(ModelInterface $model)
     {
@@ -37,6 +45,7 @@ class ActiveRecordCriteria extends AbstractCriteria
     /**
      * @param ModelInterface $model
      * @param array $data
+     * @return int
      */
     public function applyWrite(ModelInterface $model, array &$data)
     {
@@ -52,5 +61,4 @@ class ActiveRecordCriteria extends AbstractCriteria
         //FIXME: handle result and, if POST, inject the new id into data
         return 1;
     }
-
 }

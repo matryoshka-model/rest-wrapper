@@ -1,17 +1,26 @@
 <?php
+/**
+ * REST matryoshka wrapper
+ *
+ * @link        https://github.com/matryoshka-model/rest-wrapper
+ * @copyright   Copyright (c) 2014, Ripa Club
+ * @license     http://opensource.org/licenses/BSD-2-Clause Simplified BSD License
+ */
 namespace Matryoshka\Model\Wrapper\Rest;
 
 use Matryoshka\Model\Wrapper\Rest\Profiler\ProfilerAwareInterface;
 use Matryoshka\Model\Wrapper\Rest\Profiler\ProfilerAwareTrait;
+use Matryoshka\Model\Wrapper\Rest\UriResourceStrategy\DefaultStrategy;
+use Matryoshka\Model\Wrapper\Rest\UriResourceStrategy\UriResourceStrategyInterface;
 use Zend\Http\Client;
 use Zend\Http\Request;
 use Zend\Http\Response;
 use Zend\Json\Json;
-use Zend\Stdlib\ResponseInterface;
 use ZendXml\Security;
-use Matryoshka\Model\Wrapper\Rest\UriResourceStrategy\DefaultStrategy;
-use Matryoshka\Model\Wrapper\Rest\UriResourceStrategy\UriResourceStrategyInterface;
 
+/**
+ * Class RestClient
+ */
 class RestClient implements RestClientInterface, ProfilerAwareInterface
 {
     use ProfilerAwareTrait;
@@ -25,7 +34,7 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
     protected $resourceName;
 
     /**
-     * @var UriNamingStrategyInterface
+     * @var UriResourceStrategyInterface
      */
     protected $uriResourceStrategy;
 
@@ -70,8 +79,9 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
     protected $lastResponse = null;
 
     /**
+     * @param $resourceName
      * @param Client $httpClient
-     * @param Request $request
+     * @param Request $baseRequest
      */
     public function __construct($resourceName, Client $httpClient = null, Request $baseRequest = null)
     {
@@ -80,11 +90,17 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
         $this->baseRequest = $baseRequest ? $baseRequest : $this->httpClient->getRequest();
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getResourceName()
     {
         return $this->resourceName;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function delete($id = null, array $query = [])
     {
         $request = $this->prepareRequest(Request::METHOD_DELETE, $id, [], $query);
@@ -92,9 +108,7 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
     }
 
     /**
-     * @param null $id
-     * @param array $query
-     * @return array|object
+     * {@inheritdoc}
      */
     public function get($id = null, array $query = [])
     {
@@ -102,18 +116,27 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
         return $this->dispatchRequest($request);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function head($id = null, array $query = [])
     {
         $request = $this->prepareRequest(Request::METHOD_HEAD, $id, [], $query);
         return $this->dispatchRequest($request);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function options(array $query = [])
     {
         $request = $this->prepareRequest(Request::METHOD_OPTIONS, null, [], $query);
         return $this->dispatchRequest($request);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function patch($id = null, array $data, array $query = [])
     {
         $request = $this->prepareRequest(Request::METHOD_PATCH, $id, $data, $query);
@@ -121,9 +144,7 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
     }
 
     /**
-     * @param array $data
-     * @param array $query
-     * @return array|object
+     * {@inheritdoc}
      */
     public function post(array $data, array $query = [])
     {
@@ -131,12 +152,8 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
         return $this->dispatchRequest($request);
     }
 
-
     /**
-     * @param $id
-     * @param array $data
-     * @param array $query
-     * @return array|object
+     * {@inheritdoc}
      */
     public function put($id, array $data, array $query = [])
     {
@@ -183,6 +200,7 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
         }
 
         // Send request
+        /** @var $response Response */
         $response = $this->httpClient->dispatch($request);
         $this->lastRequest = $request;
         $this->lastResponse = $response;
@@ -202,9 +220,12 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
         throw $this->getInvalidResponseException($decodedResponse);
     }
 
+    /**
+     * @param array $data
+     * @return string
+     */
     protected function encodeBodyRequest(array $data)
     {
-
         $requestFormat = $this->getRequestFormat();
 
         switch ($requestFormat) {
@@ -216,13 +237,12 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
 //                 break;
             default:
                 throw new Exception\InvalidFormatOutputException(sprintf(
-                'The format "%s" is invalid',
-                $requestFormat
+                    'The format "%s" is invalid',
+                    $requestFormat
                 ));
                 break;
         }
 
-        $request->setContent($bodyRequest);
         return $bodyRequest;
     }
 
@@ -283,10 +303,10 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
     }
 
     /**
-     * @param UriNamingStrategyInterface $strategy
+     * @param UriResourceStrategyInterface $strategy
      * @return $this
      */
-    public function setUriResourceStrategy(UriNamingStrategyInterface $strategy)
+    public function setUriResourceStrategy(UriResourceStrategyInterface $strategy)
     {
         $this->uriResourceStrategy = $strategy;
         return $this;
@@ -303,6 +323,7 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
 
     /**
      * @param array $validStatusCodes
+     * @return $this
      */
     public function setValidStatusCodes(array $validStatusCodes)
     {
@@ -319,7 +340,8 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
     }
 
     /**
-     * @param string $responseFormat
+     * @param $responseFormat
+     * @return $this
      */
     public function setResponseFormat($responseFormat)
     {
@@ -336,7 +358,8 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
     }
 
     /**
-     * @param string $requestFormat
+     * @param $requestFormat
+     * @return $this
      */
     public function setRequestFormat($requestFormat)
     {
@@ -353,7 +376,8 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
     }
 
     /**
-     * @param int $returnType
+     * @param $returnType
+     * @return $this
      */
     public function setReturnType($returnType)
     {
@@ -361,12 +385,18 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
         return $this;
     }
 
-
+    /**
+     * @return Request
+     */
     public function getBaseRequest()
     {
         return $this->baseRequest;
     }
 
+    /**
+     * @param Request $request
+     * @return $this
+     */
     public function setBaseRequest(Request $request)
     {
         $this->baseRequest = $request;
@@ -396,6 +426,4 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
     {
         return $this->lastResponse;
     }
-
-
 }
