@@ -45,10 +45,10 @@ class Profiler implements ProfilerInterface
 
         if ($target instanceof Request) {
             $profileInformation['request']['uri'] = $target->getUriString();
-            $profileInformation['request']['headers'] = $target->getHeaders();
+            $profileInformation['request']['headers'] = $target->getHeaders()->toString();
             $profileInformation['request']['method'] = $target->getMethod();
-            $profileInformation['request']['post'] = $target->getPost();
-            $profileInformation['request']['query'] = $target->getPost();
+            $profileInformation['request']['post'] = $target->getPost()->toString();
+            $profileInformation['request']['query'] = $target->getPost()->toString();
             $profileInformation['request']['content'] = $target->getContent();
         }
 
