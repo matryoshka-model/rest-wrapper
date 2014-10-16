@@ -412,7 +412,7 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
     }
 
     /**
-     * @return Request
+     * @return nul|Request
      */
     public function getLastRequest()
     {
@@ -420,7 +420,7 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
     }
 
     /**
-     * @return Response
+     * @return null|Response
      */
     public function getLastResponse()
     {
