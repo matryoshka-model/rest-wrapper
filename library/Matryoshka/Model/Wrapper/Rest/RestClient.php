@@ -181,7 +181,7 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
     {
         $request = $this->cloneBaseRequest();
         $request->setMethod($method);
-        $this->getUriResourceStrategy()->configureUri($request->getUri(), $this->responseFormat, $id);
+        $this->getUriResourceStrategy()->configureUri($request->getUri(), $this->resourceName, $id);
 
 
         $queryParams = $request->getQuery();
