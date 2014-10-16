@@ -45,11 +45,12 @@ class Profiler implements ProfilerInterface
 
         if ($target instanceof Request) {
             $profileInformation['request']['uri'] = $target->getUriString();
-            $profileInformation['request']['headers'] = $target->getHeaders()->toString();
+            $profileInformation['request']['headers'] = $target->getHeaders();
             $profileInformation['request']['method'] = $target->getMethod();
             $profileInformation['request']['post'] = $target->getPost()->toString();
             $profileInformation['request']['query'] = $target->getPost()->toString();
             $profileInformation['request']['content'] = $target->getContent();
+            $profileInformation['request']['toString'] = $target->getContent()->toString();
         }
 
         $this->profiles[$this->currentIndex] = $profileInformation;
@@ -68,8 +69,13 @@ class Profiler implements ProfilerInterface
         $current['elapse'] = $current['end'] - $current['start'];
 
         if ($target instanceof Response) {
-            $current['response']['toString'] = $target->toString();
-            $current['response']['content'] = $target->getBody();
+            $profileInformation['response']['uri'] = $target->getUriString();
+            $profileInformation['response']['headers'] = $target->getHeaders();
+            $profileInformation['response']['method'] = $target->getMethod();
+            $profileInformation['response']['post'] = $target->getPost()->toString();
+            $profileInformation['response']['query'] = $target->getPost()->toString();
+            $profileInformation['response']['content'] = $target->getContent();
+            $profileInformation['response']['toString'] = $target->getContent()->toString();
         }
 
         $this->currentIndex++;
