@@ -68,6 +68,7 @@ class Profiler implements ProfilerInterface
         $current['elapse'] = $current['end'] - $current['start'];
 
         if ($target instanceof Response) {
+            $current['response']['toString'] = $target->toString();
             $current['response']['content'] = $target->getBody();
         }
 
