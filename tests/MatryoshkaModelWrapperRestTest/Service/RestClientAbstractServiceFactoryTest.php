@@ -41,7 +41,6 @@ class RestClientAbstractServiceFactoryTest extends \PHPUnit_Framework_TestCase
                         200,
                         201
                     ],
-                    'return_type' => 1,
                     'request_format' => 'json',
                     'response_format' => 'json',
                     'uri_resource_strategy' => 'Strategy',
@@ -127,4 +126,4 @@ class RestClientAbstractServiceFactoryTest extends \PHPUnit_Framework_TestCase
         $sl->setService('Config', []);
         $sl->get($service);
     }
-} 
+}

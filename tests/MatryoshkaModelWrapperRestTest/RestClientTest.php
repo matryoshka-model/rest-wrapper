@@ -86,12 +86,6 @@ class RestClientTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('json', $this->restClient->getResponseFormat());
     }
 
-    public function testGetSetReturnType()
-    {
-        $this->assertSame($this->restClient, $this->restClient->setReturnType(1));
-        $this->assertSame(1, $this->restClient->getReturnType());
-    }
-
     public function testGetSetBaseRequest()
     {
         $request = new Request();
@@ -214,10 +208,9 @@ class RestClientTest extends \PHPUnit_Framework_TestCase
         $profiler = $this->getMock('Matryoshka\Model\Wrapper\Rest\Profiler\ProfilerInterface');
 
         $client->setRequestFormat($typeResponse);
-        $client->setReturnType(0);
         $client->setProfiler($profiler);
 
         call_user_func_array([$client, $method], $params);
     }
 
-} 
+}
