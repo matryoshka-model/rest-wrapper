@@ -189,6 +189,9 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
             $request->setContent($this->encodeBodyRequest($data));
         }
 
+        $request->getHeaders()->addHeaderLine('Content-Type', 'application/' . $this->getRequestFormat())
+                              ->addHeaderLine('Accept', 'application/' . $this->getResponseFormat());
+
         return $request;
     }
 
@@ -202,6 +205,9 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
         if ($this->profiler) {
             $this->getProfiler()->profilerStart($request);
         }
+
+
+
 
         // Send request
         /** @var $response Response */
