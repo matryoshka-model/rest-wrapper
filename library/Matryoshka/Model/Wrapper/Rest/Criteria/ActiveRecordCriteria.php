@@ -11,6 +11,7 @@ namespace Matryoshka\Model\Wrapper\Rest\Criteria;
 use Matryoshka\Model\Criteria\ActiveRecord\AbstractCriteria;
 use Matryoshka\Model\ModelInterface;
 use Matryoshka\Model\Wrapper\Rest\RestClient;
+use Zend\Http\Response;
 
 /**
  * Class ActiveRecordCriteria
@@ -21,13 +22,21 @@ class ActiveRecordCriteria extends AbstractCriteria
 {
     /**
      * @param ModelInterface $model
-     * @return array|object
+     * @return int|null
      */
     public function applyDelete(ModelInterface $model)
     {
         /* @var $client RestClient */
         $client = $model->getDataGateway();
-        return $client->delete($this->getId());
+        $client->delete($this->getId());
+
+        switch ($client->getLastResponse()->getStatusCode()) {
+            case Response::STATUS_CODE_200:
+                return 1;
+            case Response::STATUS_CODE_204:
+                return 0;
+        }
+        return null;
     }
 
     /**
@@ -45,7 +54,7 @@ class ActiveRecordCriteria extends AbstractCriteria
     /**
      * @param ModelInterface $model
      * @param array $data
-     * @return int
+     * @return int|null
      */
     public function applyWrite(ModelInterface $model, array &$data)
     {
@@ -53,12 +62,18 @@ class ActiveRecordCriteria extends AbstractCriteria
         $client = $model->getDataGateway();
 
         if ($this->id) {
-            $client->put($this->id, $data);
+            $data = $client->put($this->getId(), $data);
         } else {
-            $client->post($data);
+            $data = $client->post($data);
         }
 
-        //FIXME: handle result and, if POST, inject the new id into data
-        return 1;
+        switch ($client->getLastResponse()->getStatusCode()) {
+            case Response::STATUS_CODE_200:
+            case Response::STATUS_CODE_201:
+                return 1;
+            case Response::STATUS_CODE_204:
+                return 0;
+        }
+        return null;
     }
 }
