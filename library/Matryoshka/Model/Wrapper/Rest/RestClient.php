@@ -17,6 +17,7 @@ use Zend\Http\Request;
 use Zend\Http\Response;
 use Zend\Json\Json;
 use ZendXml\Security;
+use Matryoshka\Model\Wrapper\Rest\Response\Decoder\HalJson;
 
 /**
  * Class RestClient
@@ -62,11 +63,6 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
      * @var string
      */
     protected $requestFormat = self::FORMAT_JSON;
-
-    /**
-     * @var int 0/1
-     */
-    protected $returnType = Json::TYPE_ARRAY;
 
     /**
      * @var Request
@@ -258,12 +254,13 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
 
         switch ($responseFormat) {
             case self::FORMAT_JSON:
-                return Json::decode($bodyResponse, $this->getReturnType());
+                $decoder = new HalJson();
+                return $decoder->decode($response);
                 break;
-            case self::FORMAT_XML:
-                $xml = Security::scan($response->getBody());
-                return Json::decode(Json::encode((array) $xml), $this->getReturnType());
-                break;
+//             case self::FORMAT_XML:
+//                 $xml = Security::scan($response->getBody());
+//                 return Json::decode(Json::encode((array) $xml), $this->getReturnType());
+//                 break;
             default:
                 throw new Exception\InvalidFormatOutputException(sprintf(
                     'The format "%s" is invalid',
@@ -364,24 +361,6 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
     public function setRequestFormat($requestFormat)
     {
         $this->requestFormat = $requestFormat;
-        return $this;
-    }
-
-    /**
-     * @return int
-     */
-    public function getReturnType()
-    {
-        return $this->returnType;
-    }
-
-    /**
-     * @param $returnType
-     * @return $this
-     */
-    public function setReturnType($returnType)
-    {
-        $this->returnType = $returnType;
         return $this;
     }
 

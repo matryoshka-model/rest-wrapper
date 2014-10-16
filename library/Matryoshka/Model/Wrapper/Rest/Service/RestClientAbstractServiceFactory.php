@@ -84,10 +84,6 @@ class RestClientAbstractServiceFactory implements AbstractFactoryInterface
         if (isset($config['valid_status_code']) && is_array($config['valid_status_code'])) {
             $restClient->setValidStatusCodes($config['valid_status_code']);
         }
-        // Int 0/1
-        if (isset($config['return_type'])) {
-            $restClient->setReturnType($config['return_type']);
-        }
         // string json/xml
         if (isset($config['request_format'])) {
             $restClient->setRequestFormat($config['request_format']);
