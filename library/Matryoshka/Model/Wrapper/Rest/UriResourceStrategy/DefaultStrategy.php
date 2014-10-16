@@ -23,7 +23,7 @@ class DefaultStrategy implements UriResourceStrategyInterface
         $basePath = $baseUri->getPath();
         $resourcePath = rtrim($basePath, '/') . '/' . $name;
         if ($id) {
-            $resourcePath .= $id;
+            $resourcePath .=  '/' . $id;
         }
         $baseUri->setPath($resourcePath);
         return $baseUri;

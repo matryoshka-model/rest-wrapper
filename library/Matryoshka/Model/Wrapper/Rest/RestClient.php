@@ -52,7 +52,15 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
     /**
      * @var array
      */
-    protected $validStatusCodes = [Response::STATUS_CODE_200];
+    protected $validStatusCodes = [
+        Response::STATUS_CODE_200,
+        Response::STATUS_CODE_201,
+        Response::STATUS_CODE_202,
+        Response::STATUS_CODE_203,
+        Response::STATUS_CODE_204,
+        Response::STATUS_CODE_205,
+        Response::STATUS_CODE_206
+    ];
 
     /**
      * @var string
@@ -169,7 +177,7 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
     {
         $request = $this->cloneBaseRequest();
         $request->setMethod($method);
-        $this->getUriResourceStrategy()->configureUri($request->getUri(), $this->responseFormat, $id);
+        $this->getUriResourceStrategy()->configureUri($request->getUri(), $this->resourceName, $id);
 
 
         $queryParams = $request->getQuery();
@@ -229,8 +237,9 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
                 $bodyRequest = Json::encode($data);
                 break;
             case self::FORMAT_XML:
+
                 // TODO
-//                 break;
+                // break;
             default:
                 throw new Exception\InvalidFormatOutputException(sprintf(
                     'The format "%s" is invalid',
