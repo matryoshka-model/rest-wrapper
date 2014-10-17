@@ -42,7 +42,8 @@ class HalJson implements DecoderInterface
         $bodyResponse = $response->getBody();
         $data = Json::decode($bodyResponse, Json::TYPE_ARRAY);
 
-        if  ($response->getMetadata('Content-Type') == 'application/hal+json') {
+        $headers = $response->getHeaders();
+        if  ($headers->has('Content-Type') && $headers->get('Content-Type')->getFieldValue() == 'application/hal+json') {
             return $this->decodeHal($data);
         }
         //else

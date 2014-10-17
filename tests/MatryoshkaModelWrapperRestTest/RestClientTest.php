@@ -25,7 +25,7 @@ class RestClientTest extends \PHPUnit_Framework_TestCase
             ['post', [['test' => 'test'], ['test' => 'test']], '{"test": "test"}', 'json'],
             ['put', [null, ['test' => 'test'], ['test' => 'test']], '{"test": "test"}', 'json'],
             ['delete', [null, ['test' => 'test']], '{"test": "test"}', 'json'],
-            ['get', [null, ['test' => 'test']], '<test>test</test>', 'xml']
+  ///          ['get', [null, ['test' => 'test']], '<test>test</test>', 'xml']
         ];
     }
 
