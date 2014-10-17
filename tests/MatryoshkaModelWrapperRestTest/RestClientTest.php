@@ -19,6 +19,7 @@ class RestClientTest extends \PHPUnit_Framework_TestCase
     {
         return [
             ['get', [null, ['test' => 'test']], '{"test": "test"}', 'json'],
+            ['get', [11, ['test' => 'test']], '{"test": "test"}', 'json'],
             ['head', [null, ['test' => 'test']], '{"test": "test"}', 'json'],
             ['options', [['test' => 'test']], '{"test": "test"}', 'json'],
             ['patch', [null, ['test' => 'test']], '{"test": "test"}', 'json'],
