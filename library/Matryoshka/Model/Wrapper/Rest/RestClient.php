@@ -198,7 +198,7 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
 
     /**
      * @param Request $request
-     * @return array|object
+     * @return array
      */
     public function dispatchRequest(Request $request)
     {
@@ -218,7 +218,7 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
 
         $validStatusCodes = $this->getValidStatusCodes();
         $responseStatusCode = $response->getStatusCode();
-        $decodedResponse = $this->decodeBodyResponse($response);
+        $decodedResponse = (array) $this->decodeBodyResponse($response);
 
         if (in_array($responseStatusCode, $validStatusCodes)) {
             return $decodedResponse;
@@ -256,7 +256,7 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
 
     /**
      * @param Response $response
-     * @return array|object
+     * @return mixed
      * @throws Exception\InvalidFormatOutputException
      */
     protected function decodeBodyResponse(Response $response)
@@ -288,10 +288,6 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
      */
     protected function getInvalidResponseException($bodyDecodeResponse)
     {
-        if (is_object($bodyDecodeResponse)) {
-            $bodyDecodeResponse = (array) $bodyDecodeResponse;
-        }
-
         $exception = new Exception\InvalidResponseException($bodyDecodeResponse['detail']);
         $exception->setStatus($bodyDecodeResponse['status']);
         $exception->setType($bodyDecodeResponse['type']);
