@@ -11,5 +11,8 @@ namespace Matryoshka\Model\Wrapper\Rest\Response\Decoder;
 use Zend\Http\Response;
 interface DecoderInterface
 {
+    /**
+     * @param Response $response
+     */
     public function decode(Response $response);
 }

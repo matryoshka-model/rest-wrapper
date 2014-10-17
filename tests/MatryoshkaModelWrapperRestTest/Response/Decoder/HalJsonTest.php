@@ -17,18 +17,39 @@ class HalJsonTest extends \PHPUnit_Framework_TestCase
         $this->decoder = new HalJson();
     }
 
-    public function testDecode()
-    {
-        $contentRequest =  '{"test":"test","test1":"test1"}';
-        $request = new Response();
-        $request->setContent($contentRequest);
-        $this->assertInternalType('array', $this->decoder->decode($request));
 
-        $contentRequest =  '{"_links":{"self":{"href":"http://test/user"}},"_embedded":{"users":[{"test":"test","test1":"test1","_links":{"self":{"href":"http://test/user/1"}}},{"test":"test","test1":"test1","_links":{"self":{"href":"http://test/user/2"}}}]}}';
-        $headers = new Headers();
-        $headers->addHeaderLine('Content-Type', 'application/hal+json');
-        $request->setHeaders($headers);
-        $request->setContent($contentRequest);
-        $this->assertInternalType('array', $this->decoder->decode($request));
+    /**
+     * @return array
+     */
+    public function decoderDataProvider()
+    {
+        $response1 = new Response();
+        $response1->setContent('{"test":"test","test1":"test1"}');
+        $response1->getHeaders()->addHeaderLine('Content-Type', 'application/json');
+        $result1 = ['test' => 'test', 'test1' => 'test1'];
+
+        $response2 = new Response();
+        $response2->setContent('{"_links":{"self":{"href":"http://test/user"}},"_embedded":{"users":[{"test":"test","test1":"test1","_links":{"self":{"href":"http://test/user/1"}}},{"test":"foo","test1":"baz","_links":{"self":{"href":"http://test/user/2"}}}]}}');
+        $response2->getHeaders()->addHeaderLine('Content-Type', 'application/hal+json');
+        $result2 = [
+            ['test' => 'test', 'test1' => 'test1'],
+            ['test' => 'foo', 'test1' => 'baz'],
+        ];
+
+        return [
+            [$response1, $result1],
+            [$response2, $result2],
+        ];
     }
-} 
+
+
+    /**
+     * @param Response $response
+     * @param string $result
+     * @dataProvider decoderDataProvider
+     */
+    public function testDecode(Response $response, array $result)
+    {
+        $this->assertEquals($result, $this->decoder->decode($response));
+    }
+}

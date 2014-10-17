@@ -13,34 +13,16 @@ use Zend\Json\Json;
 use Zend\Stdlib\ArrayUtils;
 class HalJson implements DecoderInterface
 {
-
-//     /**
-//      * @var int 0/1
-//      */
-//     protected $returnType = Json::TYPE_ARRAY;
-
-//     /**
-//      * @return int
-//      */
-//     public function getReturnType()
-//     {
-//         return $this->returnType;
-//     }
-
-//     /**
-//      * @param $returnType
-//      * @return $this
-//      */
-//     public function setReturnType($returnType)
-//     {
-//         $this->returnType = $returnType;
-//         return $this;
-//     }
+    /**
+     * @var array|null
+     */
+    protected $originalData = null;
 
     public function decode(Response $response)
     {
         $bodyResponse = $response->getBody();
         $data = Json::decode($bodyResponse, Json::TYPE_ARRAY);
+        $this->originalData = $data;
 
         $headers = $response->getHeaders();
         if  ($headers->has('Content-Type') && $headers->get('Content-Type')->getFieldValue() == 'application/hal+json') {
@@ -50,6 +32,10 @@ class HalJson implements DecoderInterface
         return $data;
     }
 
+    /**
+     * @param array $data
+     * @return array
+     */
     protected function decodeHal(array $data)
     {
         if (array_key_exists('_links', $data)) {
