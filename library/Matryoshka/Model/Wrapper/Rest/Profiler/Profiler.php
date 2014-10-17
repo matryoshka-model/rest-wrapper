@@ -64,7 +64,7 @@ class Profiler implements ProfilerInterface
 
         if ($target instanceof Response) {
 
-            $profileInformation['response'] = $target->toString();
+            $current['response'] = $target->toString();
         }
 
         $this->currentIndex++;
