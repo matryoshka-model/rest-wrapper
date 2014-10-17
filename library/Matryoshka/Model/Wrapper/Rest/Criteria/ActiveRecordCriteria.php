@@ -32,9 +32,8 @@ class ActiveRecordCriteria extends AbstractCriteria
 
         switch ($client->getLastResponse()->getStatusCode()) {
             case Response::STATUS_CODE_200:
-                return 1;
             case Response::STATUS_CODE_204:
-                return 0;
+                return 1;
         }
         return null;
     }
