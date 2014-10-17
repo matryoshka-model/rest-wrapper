@@ -20,11 +20,13 @@ class InvalidResponseException extends \RuntimeException implements ExceptionInt
     protected $type;
 
     /**
-     * @param mixed $status
+     * @param $status
+     * @return self
      */
     public function setStatus($status)
     {
         $this->status = $status;
+        return $this;
     }
 
     /**
@@ -37,10 +39,12 @@ class InvalidResponseException extends \RuntimeException implements ExceptionInt
 
     /**
      * @param mixed $title
+     * @return self
      */
     public function setTitle($title)
     {
         $this->title = $title;
+        return $this;
     }
 
     /**
@@ -53,10 +57,12 @@ class InvalidResponseException extends \RuntimeException implements ExceptionInt
 
     /**
      * @param mixed $type
+     * @return self
      */
     public function setType($type)
     {
         $this->type = $type;
+        return $this;
     }
 
     /**
