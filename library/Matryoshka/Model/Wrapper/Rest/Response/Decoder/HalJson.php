@@ -18,6 +18,14 @@ class HalJson implements DecoderInterface
      */
     protected $originalData = null;
 
+    /**
+     * @return array|null
+     */
+    public function getRawDecodedData()
+    {
+        return $this->originalData;
+    }
+
     public function decode(Response $response)
     {
         $bodyResponse = $response->getBody();

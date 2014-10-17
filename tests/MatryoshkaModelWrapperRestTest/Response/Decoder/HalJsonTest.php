@@ -4,6 +4,7 @@ namespace MatryoshkaModelWrapperRestTest\Response\Decoder;
 use Matryoshka\Model\Wrapper\Rest\Response\Decoder\HalJson;
 use Zend\Http\Headers;
 use Zend\Http\Response;
+use Zend\Json\Json;
 
 class HalJsonTest extends \PHPUnit_Framework_TestCase
 {
@@ -51,5 +52,6 @@ class HalJsonTest extends \PHPUnit_Framework_TestCase
     public function testDecode(Response $response, array $result)
     {
         $this->assertEquals($result, $this->decoder->decode($response));
+        $this->assertEquals(Json::decode($response->getBody(), Json::TYPE_ARRAY), $this->decoder->getRawDecodedData());
     }
 }
