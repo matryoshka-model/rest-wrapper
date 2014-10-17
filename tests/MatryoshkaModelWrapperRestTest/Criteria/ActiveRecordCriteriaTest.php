@@ -55,6 +55,7 @@ class ActiveRecordCriteriaTest extends \PHPUnit_Framework_TestCase
 
     public function testApply()
     {
+        $data = ['test' => 'test'];
         $restClient = $this->getMockBuilder('Matryoshka\Model\Wrapper\Rest\RestClient')
             ->disableOriginalConstructor()
             ->setMethods(['get'])
@@ -62,7 +63,7 @@ class ActiveRecordCriteriaTest extends \PHPUnit_Framework_TestCase
 
         $restClient->expects($this->any())
             ->method('get')
-            ->will($this->returnValue(['test'=>'test']));
+            ->will($this->returnValue($data));
 
         $model = $this->getMockBuilder('Matryoshka\Model\AbstractModel')
             ->disableOriginalConstructor()
@@ -73,7 +74,28 @@ class ActiveRecordCriteriaTest extends \PHPUnit_Framework_TestCase
             ->method('getDataGateway')
             ->will($this->returnValue($restClient));
 
-        $this->assertInternalType('array', $this->criteria->apply($model));
+        $this->assertEquals([$data], $this->criteria->apply($model));
+
+        // Empty result test
+        $restClient = $this->getMockBuilder('Matryoshka\Model\Wrapper\Rest\RestClient')
+            ->disableOriginalConstructor()
+            ->setMethods(['get'])
+            ->getMock();
+
+        $restClient->expects($this->any())
+            ->method('get')
+            ->will($this->returnValue([]));
+
+        $model = $this->getMockBuilder('Matryoshka\Model\AbstractModel')
+            ->disableOriginalConstructor()
+            ->setMethods(['getDataGateway'])
+            ->getMock();
+
+        $model->expects($this->any())
+            ->method('getDataGateway')
+            ->will($this->returnValue($restClient));
+
+        $this->assertEquals([], $this->criteria->apply($model));
     }
 
     public function testApplyWrite()

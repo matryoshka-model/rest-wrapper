@@ -41,13 +41,14 @@ class ActiveRecordCriteria extends AbstractCriteria
     /**
      * Apply
      * @param ModelInterface $model
-     * @return mixed
+     * @return array
      */
     public function apply(ModelInterface $model)
     {
         /* @var $client RestClient */
         $client = $model->getDataGateway();
-        return $client->get($this->getId());
+        $result =  $client->get($this->getId());
+        return (empty($result)) ? [] : [$result];
     }
 
     /**
