@@ -43,6 +43,6 @@ class HttpClientServiceFactory implements FactoryInterface
             $client->setOptions($config[$this->configKey]);
         }
 
-        return new Client();
+        return $client;
     }
 }
