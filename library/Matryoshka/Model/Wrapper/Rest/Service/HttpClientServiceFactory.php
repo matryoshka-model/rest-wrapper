@@ -31,6 +31,14 @@ class HttpClientServiceFactory implements FactoryInterface
 
         $client = new Client();
         if (!empty($config[$this->configKey])) {
+
+            $clientOptions = $config[$this->configKey];
+
+            if (isset($clientOptions['uri'])) {
+                $client->setUri($clientOptions['uri']);
+                unset($clientOptions['uri']);
+            }
+
             $client->setOptions($config[$this->configKey]);
         }
 
