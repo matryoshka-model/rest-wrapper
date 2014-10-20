@@ -10,6 +10,7 @@ namespace Matryoshka\Model\Wrapper\Rest\Service;
 
 use Zend\ServiceManager\FactoryInterface;
 use Zend\Http\Client;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 class HttpClientServiceFactory implements FactoryInterface
 {
