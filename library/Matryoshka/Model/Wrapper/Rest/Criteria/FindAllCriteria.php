@@ -84,7 +84,7 @@ class FindAllCriteria extends AbstractCriteria
     public function offset($offset)
     {
         if (null === $this->limit) {
-            throw new Exception\RuntimeException('Offset unsupported without limit. Use page() or set a limit prior to call offset()')
+            throw new Exception\RuntimeException('Offset unsupported without limit. Use page() or set a limit prior to call offset()');
         }
 
         $this->page(ceil($this->offset / $this->limit));
