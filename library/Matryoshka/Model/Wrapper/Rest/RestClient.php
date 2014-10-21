@@ -292,8 +292,7 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
         $contentType = $response->getHeaders()->get('Content-Type');
 
         if ($contentType instanceof ContentType && $contentType->match('application/problem+*')) {
-            $exception = new Exception\ApiProblem\DomainException($bodyDecodeResponse['detail']);
-            $exception->setStatus($bodyDecodeResponse['status']);
+            $exception = new Exception\ApiProblem\DomainException($bodyDecodeResponse['detail'], $bodyDecodeResponse['status']);
             $exception->setType($bodyDecodeResponse['type']);
             $exception->setTitle($bodyDecodeResponse['title']);
             unset($bodyDecodeResponse['title'],
