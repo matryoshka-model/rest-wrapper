@@ -19,6 +19,8 @@ class InvalidResponseException extends \RuntimeException implements ExceptionInt
 
     protected $type;
 
+    protected $messages;
+
     /**
      * @param $status
      * @return self
@@ -72,4 +74,24 @@ class InvalidResponseException extends \RuntimeException implements ExceptionInt
     {
         return $this->type;
     }
+
+    /**
+     * @param mixed $messages
+     * @return self
+     */
+    public function setMessages($messages)
+    {
+        $this->messages = $messages;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getMessages()
+    {
+        return $this->messages;
+    }
+
+
 }

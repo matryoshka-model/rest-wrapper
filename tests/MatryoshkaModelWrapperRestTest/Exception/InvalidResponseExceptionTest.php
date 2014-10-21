@@ -20,5 +20,8 @@ class InvalidResponseExceptionTest extends \PHPUnit_Framework_TestCase
 
         $exception->setType('test');
         $this->assertSame('test', $exception->getType());
+
+        $exception->setMessages('test');
+        $this->assertSame('test', $exception->getMessages());
     }
 } 

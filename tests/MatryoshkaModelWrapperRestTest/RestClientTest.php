@@ -194,7 +194,7 @@ class RestClientTest extends \PHPUnit_Framework_TestCase
         $response = new Response();
         $response->setContent($contentResponse);
         $response->setStatusCode(500);
-        $response->setContent('{"detail":"mock error","status":500,"type":"mock type","title":"mock title"}');
+        $response->setContent('{"detail":"mock error","status":500,"type":"mock type","title":"mock title", "validation_messages": "mock validatio"}');
 
         $httpClient->expects($this->any())
             ->method('dispatch')
