@@ -11,7 +11,7 @@ namespace Matryoshka\Model\Wrapper\Rest\Exception;
 /**
  * Class InvalidResponseException
  */
-class InvalidResponseException extends \RuntimeException implements ExceptionInterface
+class InvalidResponseException extends \DomainException implements ExceptionInterface
 {
     protected $status;
 

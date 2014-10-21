@@ -18,6 +18,7 @@ use Zend\Http\Response;
 use Zend\Json\Json;
 use ZendXml\Security;
 use Matryoshka\Model\Wrapper\Rest\Response\Decoder\HalJson;
+use Zend\Http\Header\ContentType;
 
 /**
  * Class RestClient
@@ -224,7 +225,7 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
             return $decodedResponse;
         }
 
-        throw $this->getInvalidResponseException($decodedResponse);
+        throw $this->getInvalidResponseException($decodedResponse, $response);
     }
 
     /**
@@ -286,12 +287,19 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
      * @param $bodyDecodeResponse
      * @return Exception\InvalidResponseException
      */
-    protected function getInvalidResponseException($bodyDecodeResponse)
+    protected function getInvalidResponseException(array $bodyDecodeResponse, Response $response)
     {
-        $exception = new Exception\InvalidResponseException($bodyDecodeResponse['detail']);
-        $exception->setStatus($bodyDecodeResponse['status']);
-        $exception->setType($bodyDecodeResponse['type']);
-        $exception->setTitle($bodyDecodeResponse['title']);
+        $contentType = $response->getHeaders()->get('Content-Type');
+
+        if ($contentType instanceof ContentType && $contentType->match('application/problem+*')) {
+            $exception = new Exception\ApiProblem\DomainException($bodyDecodeResponse['detail']);
+            $exception->setStatus($bodyDecodeResponse['status']);
+            $exception->setType($bodyDecodeResponse['type']);
+            $exception->setTitle($bodyDecodeResponse['title']);
+            $exception->setAdditionalDetails($bodyDecodeResponse);
+        } else {
+            $exception = new Exception\InvalidResponseException();
+        }
 
         return $exception;
     }
