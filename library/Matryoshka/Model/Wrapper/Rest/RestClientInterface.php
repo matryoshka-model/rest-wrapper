@@ -19,6 +19,21 @@ interface RestClientInterface
     public function getResourceName();
 
     /**
+     * @return null|Request
+     */
+    public function getLastRequest();
+
+    /**
+     * @return null|Response
+     */
+    public function getLastResponse();
+
+    /**
+     * @return null|array
+     */
+    public function getLastResponseDecode();
+
+    /**
      * @param null $id
      * @param array $query
      * @return mixed

@@ -14,12 +14,14 @@ use Matryoshka\Model\ModelInterface;
 use Zend\Stdlib\Hydrator\AbstractHydrator;
 use Matryoshka\Model\Criteria\AbstractCriteria;
 use Matryoshka\Model\Wrapper\Rest\RestClient;
+use Matryoshka\Model\Criteria\PaginableCriteriaInterface;
+use Matryoshka\Model\Wrapper\Rest\Paginator\RestPaginatorAdapter;
 
 
 /**
  * Class FindAllCriteria
  */
-class FindAllCriteria extends AbstractCriteria
+class FindAllCriteria extends AbstractCriteria implements PaginableCriteriaInterface
 {
 
     /**
@@ -27,9 +29,20 @@ class FindAllCriteria extends AbstractCriteria
      */
     protected $page = 1;
 
+    /**
+     * @var string
+     */
     protected $pageParamName = 'page';
 
+    /**
+     * @var string
+     */
     protected $pageSizeParamName = 'page_size';
+
+    /**
+     * @var string
+     */
+    protected $totalItemsParamName = 'total_items';
 
     /**
      *
@@ -58,6 +71,24 @@ class FindAllCriteria extends AbstractCriteria
     {
         $this->pageSizeParamName = (string) $name;
         return $this;
+    }
+
+    /**
+     * @param string $name
+     * @return $this
+     */
+    public function setTotalItemsParam($name)
+    {
+        $this->totalItemsParamName = (string) $name;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTotalItemsParamName()
+    {
+        return $this->totalItemsParamName;
     }
 
     /**
@@ -122,4 +153,16 @@ class FindAllCriteria extends AbstractCriteria
 
         return $client->get(null, $query);
     }
+
+	/**
+     * {@inheritdoc}
+     */
+    public function getPaginatorAdapter(ModelInterface $model)
+    {
+        $paginator = new RestPaginatorAdapter($model, $this);
+        $paginator->setTotalItemsParamName($this->totalItemsParamName);
+        return $paginator;
+    }
+
+
 }

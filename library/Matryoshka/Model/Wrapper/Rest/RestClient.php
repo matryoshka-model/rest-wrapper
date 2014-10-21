@@ -19,6 +19,7 @@ use Zend\Json\Json;
 use ZendXml\Security;
 use Matryoshka\Model\Wrapper\Rest\Response\Decoder\HalJson;
 use Zend\Http\Header\ContentType;
+use Zend\Crypt\PublicKey\Rsa\PublicKey;
 
 /**
  * Class RestClient
@@ -82,6 +83,11 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
      * @var Response
      */
     protected $lastResponse = null;
+
+    /**
+     * @var array
+     */
+    protected $lastResponseDecoded = null;
 
     /**
      * @param $resourceName
@@ -407,7 +413,7 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
     }
 
     /**
-     * @return nul|Request
+     * {@inheritdoc}
      */
     public function getLastRequest()
     {
@@ -415,10 +421,18 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
     }
 
     /**
-     * @return null|Response
+     * {@inheritdoc}
      */
     public function getLastResponse()
     {
         return $this->lastResponse;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getLastResponseDecode()
+    {
+        return $this->lastResponseDecoded;
     }
 }
