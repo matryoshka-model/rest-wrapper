@@ -203,4 +203,13 @@ class RestClientTest extends \PHPUnit_Framework_TestCase
         call_user_func_array([$client, $method], $params);
     }
 
+
+    public function testPrepareRequestShouldThrowExceptionOnInvalidFormat()
+    {
+        $this->restClient->setRequestFormat('invalid format');
+
+        $this->setExpectedException('\Matryoshka\Model\Wrapper\Rest\Exception\InvalidFormatException');
+        $this->restClient->prepareRequest('post', null, ['foo' => 'baz']);
+    }
+
 }

@@ -248,11 +248,11 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
                 break;
             case self::FORMAT_XML:
 
-                // TODO
+                // TODO: not yet implemented
                 // break;
             default:
                 throw new Exception\InvalidFormatException(sprintf(
-                    'The format request "%s" is invalid',
+                    'The "%s" format is invalid or not supported',
                     $requestFormat
                 ));
                 break;
@@ -276,13 +276,14 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
                 $decoder = new HalJson();
                 return $decoder->decode($response);
                 break;
-//            case self::FORMAT_XML:
-  //               $xml = Security::scan($response->getBody());
-    //             return Json::decode(Json::encode((array) $xml), $this->getReturnType());
-      //           break;
+           case self::FORMAT_XML:
+               // TODO: not yet implemented
+               // $xml = Security::scan($response->getBody());
+               // return Json::decode(Json::encode((array) $xml), $this->getReturnType());
+               // break;
             default:
                 throw new Exception\InvalidFormatException(sprintf(
-                    'The format response "%s" is invalid',
+                    'The "%s" format is invalid or not supported',
                     $responseFormat
                 ));
                 break;
