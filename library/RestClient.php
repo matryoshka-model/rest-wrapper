@@ -251,7 +251,7 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
                 // TODO
                 // break;
             default:
-                throw new Exception\InvalidFormatOutputException(sprintf(
+                throw new Exception\InvalidFormatException(sprintf(
                     'The format request "%s" is invalid',
                     $requestFormat
                 ));
@@ -264,7 +264,7 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
     /**
      * @param Response $response
      * @return mixed
-     * @throws Exception\InvalidFormatOutputException
+     * @throws Exception\InvalidFormatException
      */
     protected function decodeBodyResponse(Response $response)
     {
@@ -281,7 +281,7 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
     //             return Json::decode(Json::encode((array) $xml), $this->getReturnType());
       //           break;
             default:
-                throw new Exception\InvalidFormatOutputException(sprintf(
+                throw new Exception\InvalidFormatException(sprintf(
                     'The format response "%s" is invalid',
                     $responseFormat
                 ));
@@ -298,15 +298,23 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
         $contentType = $response->getHeaders()->get('Content-Type');
 
         if ($contentType instanceof ContentType && $contentType->match('application/problem+*')) {
+
+            $apiProblemDefaults = [
+                'type'      => $response->getReasonPhrase(),
+                'title'     => '',
+                'status'    => $response->getStatusCode(),
+                'detail'    => '',
+                'instance'  => '',
+            ];
+
+            $bodyDecodeResponse += $apiProblemDefaults;
+
             $exception = new Exception\ApiProblem\DomainException($bodyDecodeResponse['detail'], $bodyDecodeResponse['status']);
             $exception->setType($bodyDecodeResponse['type']);
             $exception->setTitle($bodyDecodeResponse['title']);
-            unset($bodyDecodeResponse['title'],
-                $bodyDecodeResponse['type'],
-                $bodyDecodeResponse['status'],
-                $bodyDecodeResponse['detail']
-            );
-
+            foreach ($apiProblemDefaults as $key => $value) {
+                unset($bodyDecodeResponse[$key]);
+            }
             $exception->setAdditionalDetails($bodyDecodeResponse);
         } else {
             $exception = new Exception\InvalidResponseException($response->getContent(), $response->getStatusCode());

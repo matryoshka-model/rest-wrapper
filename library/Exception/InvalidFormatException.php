@@ -9,8 +9,8 @@
 namespace Matryoshka\Model\Wrapper\Rest\Exception;
 
 /**
- * Class InvalidFormatOutputException
+ * Class InvalidFormatException
  */
-class InvalidFormatOutputException extends \RuntimeException implements ExceptionInterface
+class InvalidFormatException extends \RuntimeException implements ExceptionInterface
 {
 }

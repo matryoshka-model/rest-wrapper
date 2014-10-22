@@ -35,19 +35,25 @@ class RestClientTest extends \PHPUnit_Framework_TestCase
      */
     public function providerServiceRequestResponseException()
     {
-        return [
-            ['get', [null, ['test' => 'test']], '{"test": "test"}', 'error'],
-            ['post', [['test' => 'test'], ['test' => 'test']], '{"test": "test"}', 'error'],
-        ];
-    }
+        //Params: [$method, $params, $responseContent, $responseContentType, $responseStatusCode, $format, $exceptionType]
 
-    /**
-     * @return array
-     */
-    public function providerServiceResponseCodeException()
-    {
+        $apiProblemResponse = '{
+    "type": "http://example.com/probs/out-of-credit",
+    "title": "You do not have enough credit.",
+    "detail": "Your current balance is 30, but that costs 50.",
+    "instance": "http://example.net/account/12345/msgs/abc",
+    "balance": 30,
+    "accounts": ["http://example.net/account/12345",
+                 "http://example.net/account/67890"]
+   }';
+
         return [
-            ['get', [null, ['test' => 'test']], '{"test": "test"}', 'json']
+            ['get', [null], '{"test": "test"}', 'application/json', 500, 'json'],
+            ['post', [['test' => 'test']], '{"test": "test"}', 'application/json', 500, 'json'],
+            ['delete', ['id'], '', 'application/json', 500, 'json'],
+            ['get', [null], $apiProblemResponse, 'application/problem+json', 500, 'json', '\Matryoshka\Model\Wrapper\Rest\Exception\ApiProblem\DomainException'],
+            ['get', ['id'], '', 'application/problem+json', 502, 'json', '\Matryoshka\Model\Wrapper\Rest\Exception\ApiProblem\DomainException'],
+            ['get', [null], '', 'application/json', 502, 'invalid-format', '\Matryoshka\Model\Wrapper\Rest\Exception\InvalidFormatException'],
         ];
     }
 
@@ -152,12 +158,23 @@ class RestClientTest extends \PHPUnit_Framework_TestCase
         $this->assertInternalType('array', call_user_func_array([$client, $method], $params));
     }
 
+
     /**
-     * @param $contentResponse
+     * @param string $method
+     * @param array $params
+     * @param string $responseContent
+     * @param string $format
+     * @param string $exceptionType
      * @dataProvider providerServiceRequestResponseException
-     * @expectedException \Matryoshka\Model\Wrapper\Rest\Exception\InvalidFormatOutputException
      */
-    public function testHttpMethodRequestResponseException($method, array $params, $contentResponse, $typeResponse)
+    public function testHttpMethodRequestResponseException(
+        $method,
+        array $params,
+        $responseContent,
+        $responseContentType,
+        $responseStatusCode,
+        $format,
+        $exceptionType = '\Matryoshka\Model\Wrapper\Rest\Exception\InvalidResponseException')
     {
         $httpClient = $this->getMockBuilder('Zend\Http\Client')
             ->disableOriginalConstructor()
@@ -165,7 +182,10 @@ class RestClientTest extends \PHPUnit_Framework_TestCase
             ->getMock();
 
         $response = new Response();
-        $response->setContent($contentResponse);
+        $response->setContent($responseContent);
+        $response->getHeaders()->addHeaderLine('Content-Type: ' . $responseContentType);
+        $response->setStatusCode($responseStatusCode);
+
 
         $httpClient->expects($this->any())
             ->method('dispatch')
@@ -176,47 +196,10 @@ class RestClientTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($response));
 
         $client = new RestClient('test', $httpClient);
-        $client->setResponseFormat($typeResponse);
-        $profiler = $this->getMock('Matryoshka\Model\Wrapper\Rest\Profiler\ProfilerInterface');
+        $client->setResponseFormat($format);
+        $client->setRequestFormat($format);
 
-        $client->setRequestFormat($typeResponse);
-        $client->setProfiler($profiler);
-
-        call_user_func_array([$client, $method], $params);
-    }
-
-    /**
-     * @param $contentResponse
-     * @dataProvider providerServiceResponseCodeException
-     * @expectedException \Matryoshka\Model\Wrapper\Rest\Exception\InvalidResponseException
-     */
-    public function testHttpMethodResponseCodeException($method, array $params, $contentResponse, $typeResponse)
-    {
-        $httpClient = $this->getMockBuilder('Zend\Http\Client')
-            ->disableOriginalConstructor()
-            ->setMethods(['dispatch', 'getResponse'])
-            ->getMock();
-
-        $response = new Response();
-        $response->setContent($contentResponse);
-        $response->setStatusCode(500);
-        $response->setContent('{"detail":"mock error","status":500,"type":"mock type","title":"mock title", "validation_messages": "mock validatio"}');
-
-        $httpClient->expects($this->any())
-            ->method('dispatch')
-            ->will($this->returnValue($response));
-
-        $httpClient->expects($this->any())
-            ->method('getResponse')
-            ->will($this->returnValue($response));
-
-        $client = new RestClient('test', $httpClient);
-        $client->setResponseFormat($typeResponse);
-        $profiler = $this->getMock('Matryoshka\Model\Wrapper\Rest\Profiler\ProfilerInterface');
-
-        $client->setRequestFormat($typeResponse);
-        $client->setProfiler($profiler);
-
+        $this->setExpectedException($exceptionType);
         call_user_func_array([$client, $method], $params);
     }
 
