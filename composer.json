@@ -39,13 +39,10 @@
         }
     ],
     "autoload": {
-        "psr-0": {
-            "Matryoshka": "library/",
-            "MatryoshkaModelWrapperRestTest": "tests/"
-        },
-        "classmap": [
-            "./"
-        ]
+        "psr-4": {
+        	"Matryoshka\\Model\\Wrapper\\Rest\\": "library/",
+        	"MatryoshkaModelWrapperRestTest\\": "tests/"
+        }
     },
     "keywords": [
         "model",
