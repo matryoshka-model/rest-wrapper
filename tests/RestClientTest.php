@@ -104,6 +104,12 @@ class RestClientTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($this->restClient->getLastResponse());
     }
 
+
+    public function testGetLastResponseDecoded()
+    {
+        $this->assertNull($this->restClient->getLastResponseDecoded());
+    }
+
     public function testCloneBaseRequest()
     {
         $request = $this->restClient->getBaseRequest();

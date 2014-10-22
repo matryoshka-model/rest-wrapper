@@ -436,7 +436,7 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
     /**
      * {@inheritdoc}
      */
-    public function getLastResponseDecode()
+    public function getLastResponseDecoded()
     {
         return $this->lastResponseDecoded;
     }
