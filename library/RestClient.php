@@ -310,7 +310,22 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
 
             $bodyDecodeResponse += $apiProblemDefaults;
 
-            $exception = new Exception\ApiProblem\DomainException($bodyDecodeResponse['detail'], $bodyDecodeResponse['status']);
+            //Setup remote exception
+            $remoteExceptionStack = isset($bodyDecodeResponse['exception_stack']) && is_array($bodyDecodeResponse['exception_stack']) ?
+                $bodyDecodeResponse['exception_stack'] : [];
+
+            array_unshift($remoteExceptionStack, [
+                'message' => $bodyDecodeResponse['detail'],
+                'code'    => $bodyDecodeResponse['status'],
+                'trace'   => isset($bodyDecodeResponse['trace']) ? $bodyDecodeResponse['trace'] : null,
+            ]);
+
+            //Setup exception
+            $exception = new Exception\ApiProblem\DomainException(
+                $bodyDecodeResponse['detail'],
+                $bodyDecodeResponse['status'],
+                Exception\RemoteException::factory($remoteExceptionStack) //Set remote ex chain as previous of current ex
+            );
             $exception->setType($bodyDecodeResponse['type']);
             $exception->setTitle($bodyDecodeResponse['title']);
             foreach ($apiProblemDefaults as $key => $value) {
