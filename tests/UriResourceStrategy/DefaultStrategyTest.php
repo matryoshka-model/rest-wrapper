@@ -24,4 +24,4 @@ class DefaultStrategyTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($uri, $this->strategy->configureUri($uri, 'test', 12));
         $this->assertSame('//http://test/test/12', $uri->toString());
     }
-} 
+}

@@ -43,12 +43,12 @@ class RestPaginatorAdapter implements AdapterInterface
     protected $totalItemsParamName = 'total_items';
 
 
-	/**
+    /**
 	 * @param AbstractModel $model
 	 * @param FindAllCriteria $criteria
 	 * @throws InvalidArgumentException
 	 */
-	public function __construct(AbstractModel $model, FindAllCriteria $criteria)
+    public function __construct(AbstractModel $model, FindAllCriteria $criteria)
     {
         if (!$model->getDataGateway() instanceof RestClientInterface) {
             throw new InvalidArgumentException('Model must provide a RestClientInterface datagateway');
@@ -103,7 +103,7 @@ class RestPaginatorAdapter implements AdapterInterface
         return $resultSet;
     }
 
-	/**
+    /**
      * {@inheritdoc}
      */
     public function count()

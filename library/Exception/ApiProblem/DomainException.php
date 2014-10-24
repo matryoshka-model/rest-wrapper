@@ -11,5 +11,9 @@ namespace Matryoshka\Model\Wrapper\Rest\Exception\ApiProblem;
 use Matryoshka\Model\Wrapper\Rest\Exception\ExceptionInterface;
 use ZF\ApiProblem\Exception\DomainException as ZFApiProblemDomainException;
 
+/**
+ * Class DomainException
+ */
 class DomainException extends ZFApiProblemDomainException implements ExceptionInterface
-{}
+{
+}

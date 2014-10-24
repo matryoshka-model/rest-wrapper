@@ -148,4 +148,4 @@ class ActiveRecordCriteriaTest extends \PHPUnit_Framework_TestCase
         $response->setStatusCode(404);
         $this->assertNull($this->criteria->applyWrite($model, $array));
     }
-} 
+}

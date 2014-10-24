@@ -35,4 +35,4 @@ class ProfilerTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEmpty($this->profiler->getProfiles());
     }
-} 
+}

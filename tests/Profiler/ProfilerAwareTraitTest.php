@@ -20,4 +20,4 @@ class ProfilerAwareTraitTest extends \PHPUnit_Framework_TestCase
         $this->mockTrait->setProfiler($profiler);
         $this->assertSame($profiler,   $this->mockTrait->getProfiler());
     }
-} 
+}

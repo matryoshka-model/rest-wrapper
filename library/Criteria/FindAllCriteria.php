@@ -154,7 +154,7 @@ class FindAllCriteria extends AbstractCriteria implements PaginableCriteriaInter
         return $client->get(null, $query);
     }
 
-	/**
+    /**
      * {@inheritdoc}
      */
     public function getPaginatorAdapter(ModelInterface $model)
