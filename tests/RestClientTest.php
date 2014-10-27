@@ -158,6 +158,20 @@ class RestClientTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceof('\Zend\Http\Request', $client->getLastRequest());
         $this->assertSame($response, $client->getLastResponse());
         $this->assertSame($client->getResponseDecoder()->getLastPayload(), $client->getLastResponseData());
+
+        //Test query params
+        if (
+            (in_array($method, ['delete', 'get', 'head', 'post']) && isset($params[1]) && $query = $params[1])
+            ||
+            (in_array($method, ['options']) && isset($params[0]) && $query = $params[0])
+            ||
+            (in_array($method, ['patch', 'put']) && isset($params[2]) && $query = $params[2])
+         ) {
+            $request = $client->getLastRequest();
+            foreach ($query as $key => $value) {
+                $this->assertEquals($value, $request->getQuery($key));
+            }
+        }
     }
 
 
