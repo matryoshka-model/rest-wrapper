@@ -206,18 +206,19 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
     public function dispatchRequest(Request $request)
     {
         if ($this->profiler) {
-            $this->getProfiler()->profilerStart($request);
+            $this->getProfiler()->profilerStart();
         }
 
         // Send request
         /** @var $response Response */
         $response = $this->httpClient->dispatch($request);
-        $this->lastRequest = $request;
-        $this->lastResponse = $response;
 
         if ($this->profiler) {
-            $this->getProfiler()->profilerFinish($this->httpClient->getResponse());
+            $this->getProfiler()->profilerFinish($this->httpClient);
         }
+
+        $this->lastRequest = $request;
+        $this->lastResponse = $response;
 
         $validStatusCodes = $this->getValidStatusCodes();
         $responseStatusCode = $response->getStatusCode();

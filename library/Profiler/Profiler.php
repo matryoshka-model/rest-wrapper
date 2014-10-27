@@ -30,10 +30,9 @@ class Profiler implements ProfilerInterface
     protected $currentIndex = 0;
 
     /**
-     * @param $target
-     * @return self
+     * @return $this
      */
-    public function profilerStart($target)
+    public function profilerStart()
     {
         $profileInformation = [
             'request' => null,
@@ -43,29 +42,23 @@ class Profiler implements ProfilerInterface
             'elapse' => null
         ];
 
-        if ($target instanceof Request) {
-            $profileInformation['request'] = $target->toString();
-        }
-
         $this->profiles[$this->currentIndex] = $profileInformation;
         return $this;
     }
 
     /**
-     * @param $target
-     * @return self
+     * @param Client $target
+     * @return $this
      */
-    public function profilerFinish($target)
+    public function profilerFinish(Client $target)
     {
         $current = &$this->profiles[$this->currentIndex];
 
         $current['end'] = microtime(true);
         $current['elapse'] = $current['end'] - $current['start'];
 
-        if ($target instanceof Response) {
-
-            $current['response'] = $target->toString();
-        }
+        $current['request']  = (string) $target->getLastRawRequest();
+        $current['response'] = (string) $target->getLastRawResponse();
 
         $this->currentIndex++;
         return $this;

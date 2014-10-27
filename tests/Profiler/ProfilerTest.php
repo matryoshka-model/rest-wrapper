@@ -4,6 +4,7 @@ namespace MatryoshkaModelWrapperRestTest\Profiler;
 use Matryoshka\Model\Wrapper\Rest\Profiler\Profiler;
 use Zend\Http\Request;
 use Zend\Http\Response;
+use Zend\Http\Client;
 
 class ProfilerTest extends \PHPUnit_Framework_TestCase
 {
@@ -19,16 +20,14 @@ class ProfilerTest extends \PHPUnit_Framework_TestCase
 
     public function testProfilerStart()
     {
-        $request = new Request();
-        $this->assertSame($this->profiler, $this->profiler->profilerStart($request));
+        $this->assertSame($this->profiler, $this->profiler->profilerStart());
     }
 
     public function testProfilerStop()
     {
-        $response = new Response();
-        $request = new Request();
-        $this->profiler->profilerStart($request);
-        $this->assertSame($this->profiler, $this->profiler->profilerFinish($response));
+        $client = new Client();
+        $this->profiler->profilerStart();
+        $this->assertSame($this->profiler, $this->profiler->profilerFinish($client));
     }
 
     public function testGetProfiles()

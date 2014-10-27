@@ -8,6 +8,7 @@
  */
 namespace Matryoshka\Model\Wrapper\Rest\Profiler;
 
+use Zend\Http\Client;
 /**
  * Interface HttpProfilerInterface
  *
@@ -16,14 +17,13 @@ namespace Matryoshka\Model\Wrapper\Rest\Profiler;
 interface ProfilerInterface
 {
     /**
-     * @param $target
-     * @return mixed
+     * @return $this
      */
-    public function profilerStart($target);
+    public function profilerStart();
 
     /**
-     * @param $target
-     * @return mixed>
+     * @param Client $target
+     * @return $this
      */
-    public function profilerFinish($target);
+    public function profilerFinish(Client $target);
 }
