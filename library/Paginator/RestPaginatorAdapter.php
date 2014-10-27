@@ -89,7 +89,7 @@ class RestPaginatorAdapter implements AdapterInterface
 
         /* @var $restClient RestClientInterface */
         $restClient = $this->model->getDataGateway();
-        $collectionData = (array) $restClient->getLastResponseDecoded();
+        $collectionData = (array) $restClient->getLastResponseData();
 
         $this->count = null;
         if (isset($collectionData[$this->totalItemsParamName])) {

@@ -37,9 +37,37 @@ class HalTest extends \PHPUnit_Framework_TestCase
             ['test' => 'foo', 'test1' => 'baz'],
         ];
 
+//         $response3 = new Response();
+//         $response3->setContent('<resource rel="self" href="/" xmlns:ex="http://example.org/rels/">
+//   <link rel="ex:look" href="/bleh" />
+//   <link rel="ex:search" href="/search?term={searchTerm}" />
+//   <resource rel="ex:member" name="1" href="/foo">
+//     <link rel="ex:created_by" href="/some_dude" />
+//     <example>bar</example>
+//     <resource rel="ex:status" href="/foo;status">
+//       <some_property>disabled</some_property>
+//     </resource>
+//   </resource>
+//   <resource rel="ex:member" name="2" href="/bar">
+//     <link rel="ex:created_by" href="http://example.com/some_other_guy" />
+//     <example>bar</example>
+//     <resource rel="ex:status" href="/foo;status">
+//       <some_property>disabled</some_property>
+//     </resource>
+//   </resource>
+//   <link rel="ex:widget" name="1" href="/chunky" />
+//   <link rel="ex:widget" name="2" href="/bacon" />
+// </resource>');
+//         $response3->getHeaders()->addHeaderLine('Content-Type', 'application/hal+xml');
+//         $result3 = [
+//             ['test' => 'test', 'test1' => 'test1'],
+//             ['test' => 'foo', 'test1' => 'baz'],
+//         ];
+
         return [
             [$response1, $result1],
             [$response2, $result2],
+//             [$response3, $result3],
         ];
     }
 
@@ -53,5 +81,24 @@ class HalTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals($result, $this->decoder->decode($response));
         $this->assertEquals(Json::decode($response->getBody(), Json::TYPE_ARRAY), $this->decoder->getLastPayload());
+    }
+
+    /**
+     * @expectedException \Matryoshka\Model\Wrapper\Rest\Exception\InvalidResponseException
+     */
+    public function testDecodeShouldThrowExceptionWhenContentTypeMissing()
+    {
+        $response = new Response();
+        $this->decoder->decode($response);
+    }
+
+    /**
+     * @expectedException \Matryoshka\Model\Wrapper\Rest\Exception\InvalidFormatException
+     */
+    public function testDecodeShouldThrowExceptionWhenInvalidResponseFormat()
+    {
+        $response = new Response();
+        $response->getHeaders()->addHeaderLine('Content-Type', 'application/invalid');
+        $this->decoder->decode($response);
     }
 }

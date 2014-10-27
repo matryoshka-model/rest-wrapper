@@ -31,7 +31,7 @@ interface RestClientInterface
     /**
      * @return null|array
      */
-    public function getLastResponseDecoded();
+    public function getLastResponseData();
 
     /**
      * @param null $id

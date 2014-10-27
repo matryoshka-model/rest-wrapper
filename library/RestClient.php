@@ -85,11 +85,6 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
     protected $lastResponse = null;
 
     /**
-     * @var array
-     */
-    protected $lastResponseDecoded = null;
-
-    /**
      * @param $resourceName
      * @param Client $httpClient
      * @param Request $baseRequest
@@ -430,8 +425,8 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
     /**
      * {@inheritdoc}
      */
-    public function getLastResponseDecoded()
+    public function getLastResponseData()
     {
-        return $this->lastResponseDecoded;
+        return $this->getResponseDecoder()->getLastPayload();
     }
 }

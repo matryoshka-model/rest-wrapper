@@ -26,7 +26,7 @@ class RestClientTest extends \PHPUnit_Framework_TestCase
             ['post', [['test' => 'test'], ['test' => 'test']], '{"test": "test"}', 'application/json', 'json'],
             ['put', [null, ['test' => 'test'], ['test' => 'test']], '{"test": "test"}', 'application/json', 'json'],
             ['delete', [null, ['test' => 'test']], '{"test": "test"}', 'application/json', 'json'],
-            ['get', ['id', ['test' => 'test']], '<test>test</test>', 'application/xml', 'json'],
+//             ['get', ['id', ['test' => 'test']], '<test>test</test>', 'application/xml', 'json'],
         ];
     }
 
@@ -110,9 +110,9 @@ class RestClientTest extends \PHPUnit_Framework_TestCase
     }
 
 
-    public function testGetLastResponseDecoded()
+    public function testGetLastResponseData()
     {
-        $this->assertNull($this->restClient->getLastResponseDecoded());
+        $this->assertNull($this->restClient->getLastResponseData());
     }
 
     public function testCloneBaseRequest()
@@ -155,6 +155,9 @@ class RestClientTest extends \PHPUnit_Framework_TestCase
         call_user_func_array([$client, $method], $params);
 
         $this->assertInternalType('array', call_user_func_array([$client, $method], $params));
+        $this->assertInstanceof('\Zend\Http\Request', $client->getLastRequest());
+        $this->assertSame($response, $client->getLastResponse());
+        $this->assertSame($client->getResponseDecoder()->getLastPayload(), $client->getLastResponseData());
     }
 
 

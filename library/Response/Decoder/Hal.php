@@ -39,10 +39,11 @@ class Hal implements DecoderInterface
             case $contentType->match('*/json'):
                 $payload = Json::decode($response->getBody(), Json::TYPE_ARRAY);
                 break;
-            case $contentType->match('*/xml'):
-                $xml = Security::scan($response->getBody());
-                $payload = Json::decode(Json::encode((array) $xml), Json::TYPE_ARRAY);
-                break;
+                //TODO: xml
+//             case $contentType->match('*/xml'):
+//                 $xml = Security::scan($response->getBody());
+//                 $payload = Json::decode(Json::encode((array) $xml), Json::TYPE_ARRAY);
+//                 break;
 
             default:
                 throw new Exception\InvalidFormatException(sprintf(
