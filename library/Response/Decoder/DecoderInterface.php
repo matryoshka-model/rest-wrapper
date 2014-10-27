@@ -15,4 +15,9 @@ interface DecoderInterface
      * @param Response $response
      */
     public function decode(Response $response);
+
+    /**
+     * @return array|null
+     */
+    public function getLastPayload();
 }

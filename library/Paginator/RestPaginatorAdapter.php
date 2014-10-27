@@ -12,9 +12,8 @@ use Zend\Paginator\Adapter\AdapterInterface;
 use Matryoshka\Model\AbstractModel;
 use Matryoshka\Model\Wrapper\Rest\Criteria\FindAllCriteria;
 use Matryoshka\Model\Wrapper\Rest\RestClientInterface;
-use Matryoshka\Model\Exception\InvalidArgumentException;
 use Matryoshka\Model\ResultSet\HydratingResultSet;
-use Matryoshka\Model\Exception\RuntimeException;
+use Matryoshka\Model\Exception;
 /**
  * Class RestPaginatorAdapter
  */
@@ -36,12 +35,10 @@ class RestPaginatorAdapter implements AdapterInterface
      */
     protected $count = null;
 
-
     /**
      * @var string
      */
     protected $totalItemsParamName = 'total_items';
-
 
     /**
 	 * @param AbstractModel $model
@@ -51,7 +48,7 @@ class RestPaginatorAdapter implements AdapterInterface
     public function __construct(AbstractModel $model, FindAllCriteria $criteria)
     {
         if (!$model->getDataGateway() instanceof RestClientInterface) {
-            throw new InvalidArgumentException('Model must provide a RestClientInterface datagateway');
+            throw new Exception\InvalidArgumentException('Model must provide a RestClientInterface datagateway');
         }
 
         $this->model = $model;
@@ -90,7 +87,6 @@ class RestPaginatorAdapter implements AdapterInterface
 
         $resultSet = $this->model->find($criteria);
 
-
         /* @var $restClient RestClientInterface */
         $restClient = $this->model->getDataGateway();
         $collectionData = (array) $restClient->getLastResponseDecoded();
@@ -109,14 +105,9 @@ class RestPaginatorAdapter implements AdapterInterface
     public function count()
     {
         if (null === $this->count) {
-            throw new RuntimeException('If your API response returns the total_items value, call getItems() prior using count()');
+            throw new Exception\RuntimeException('If your API response returns the total_items value, call getItems() prior using count()');
         }
 
         return $this->count;
     }
-
-
-
-
-
 }

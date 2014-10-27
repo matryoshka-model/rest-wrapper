@@ -17,9 +17,9 @@ use Zend\Http\Request;
 use Zend\Http\Response;
 use Zend\Json\Json;
 use ZendXml\Security;
-use Matryoshka\Model\Wrapper\Rest\Response\Decoder\HalJson;
 use Zend\Http\Header\ContentType;
-use Zend\Crypt\PublicKey\Rsa\PublicKey;
+use Matryoshka\Model\Wrapper\Rest\Response\Decoder\DecoderInterface;
+use Matryoshka\Model\Wrapper\Rest\Response\Decoder\Hal;
 
 /**
  * Class RestClient
@@ -52,6 +52,11 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
     protected $baseRequest;
 
     /**
+     * @var DecoderInterface
+     */
+    protected $responseDecoder;
+
+    /**
      * @var array
      */
     protected $validStatusCodes = [
@@ -63,11 +68,6 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
         Response::STATUS_CODE_205,
         Response::STATUS_CODE_206
     ];
-
-    /**
-     * @var string
-     */
-    protected $responseFormat = self::FORMAT_JSON;
 
     /**
      * @var string
@@ -197,7 +197,8 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
         }
 
         $request->getHeaders()->addHeaderLine('Content-Type', 'application/' . $this->getRequestFormat())
-                              ->addHeaderLine('Accept', 'application/' . $this->getResponseFormat());
+                              ->addHeaderLine('Accept', 'application/json')
+                              ->addHeaderLine('Accept', 'application/xml');
 
         return $request;
     }
@@ -225,7 +226,7 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
 
         $validStatusCodes = $this->getValidStatusCodes();
         $responseStatusCode = $response->getStatusCode();
-        $decodedResponse = (array) $this->decodeBodyResponse($response);
+        $decodedResponse = (array) $this->getResponseDecoder()->decode($response);
 
         if (in_array($responseStatusCode, $validStatusCodes)) {
             return $decodedResponse;
@@ -259,35 +260,6 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
         }
 
         return $bodyRequest;
-    }
-
-    /**
-     * @param Response $response
-     * @return mixed
-     * @throws Exception\InvalidFormatException
-     */
-    protected function decodeBodyResponse(Response $response)
-    {
-        $bodyResponse = $response->getBody();
-        $responseFormat = $this->getResponseFormat();
-
-        switch ($responseFormat) {
-            case self::FORMAT_JSON:
-                $decoder = new HalJson();
-                return $decoder->decode($response);
-                break;
-           case self::FORMAT_XML:
-               // TODO: not yet implemented
-               // $xml = Security::scan($response->getBody());
-               // return Json::decode(Json::encode((array) $xml), $this->getReturnType());
-               // break;
-            default:
-                throw new Exception\InvalidFormatException(sprintf(
-                    'The "%s" format is invalid or not supported',
-                    $responseFormat
-                ));
-                break;
-        }
     }
 
     /**
@@ -339,6 +311,22 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
         return $exception;
     }
 
+
+    public function getResponseDecoder()
+    {
+        if (null === $this->responseDecoder) {
+            $this->setResponseDecoder(new Hal);
+        }
+
+        return $this->responseDecoder;
+    }
+
+    public function setResponseDecoder(DecoderInterface $decoder)
+    {
+        $this->responseDecoder = $decoder;
+        return $this;
+    }
+
     /**
      * @return UriResourceStrategyInterface
      */
@@ -376,24 +364,6 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
     public function setValidStatusCodes(array $validStatusCodes)
     {
         $this->validStatusCodes = $validStatusCodes;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getResponseFormat()
-    {
-        return $this->responseFormat;
-    }
-
-    /**
-     * @param $responseFormat
-     * @return $this
-     */
-    public function setResponseFormat($responseFormat)
-    {
-        $this->responseFormat = $responseFormat;
         return $this;
     }
 

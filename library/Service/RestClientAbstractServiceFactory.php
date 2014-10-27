@@ -88,10 +88,6 @@ class RestClientAbstractServiceFactory implements AbstractFactoryInterface
         if (isset($config['request_format'])) {
             $restClient->setRequestFormat($config['request_format']);
         }
-        // string json/xml
-        if (isset($config['response_format'])) {
-            $restClient->setResponseFormat($config['response_format']);
-        }
         // Profiler
         if (isset($config['profiler']) && $serviceLocator->has($config['profiler'])) {
             $restClient->setProfiler($serviceLocator->get($config['profiler']));

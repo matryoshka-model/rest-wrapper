@@ -18,15 +18,15 @@ class RestClientTest extends \PHPUnit_Framework_TestCase
     public function providerServiceResponse()
     {
         return [
-            ['get', [null, ['test' => 'test']], '{"test": "test"}', 'json'],
-            ['get', [11, ['test' => 'test']], '{"test": "test"}', 'json'],
-            ['head', [null, ['test' => 'test']], '{"test": "test"}', 'json'],
-            ['options', [['test' => 'test']], '{"test": "test"}', 'json'],
-            ['patch', [null, ['test' => 'test']], '{"test": "test"}', 'json'],
-            ['post', [['test' => 'test'], ['test' => 'test']], '{"test": "test"}', 'json'],
-            ['put', [null, ['test' => 'test'], ['test' => 'test']], '{"test": "test"}', 'json'],
-            ['delete', [null, ['test' => 'test']], '{"test": "test"}', 'json'],
-  ///          ['get', [null, ['test' => 'test']], '<test>test</test>', 'xml']
+            ['get', [null, ['test' => 'test']], '{"test": "test"}', 'application/json', 'json'],
+            ['get', [11, ['test' => 'test']], '{"test": "test"}', 'application/json', 'json'],
+            ['head', [null, ['test' => 'test']], '{"test": "test"}', 'application/json', 'json'],
+            ['options', [['test' => 'test']], '{"test": "test"}', 'application/json',  'json'],
+            ['patch', [null, ['test' => 'test']], '{"test": "test"}', 'application/json', 'json'],
+            ['post', [['test' => 'test'], ['test' => 'test']], '{"test": "test"}', 'application/json', 'json'],
+            ['put', [null, ['test' => 'test'], ['test' => 'test']], '{"test": "test"}', 'application/json', 'json'],
+            ['delete', [null, ['test' => 'test']], '{"test": "test"}', 'application/json', 'json'],
+            ['get', ['id', ['test' => 'test']], '<test>test</test>', 'application/xml', 'json'],
         ];
     }
 
@@ -48,12 +48,17 @@ class RestClientTest extends \PHPUnit_Framework_TestCase
    }';
 
         return [
+            //Bad Responses
             ['get', [null], '{"test": "test"}', 'application/json', 500, 'json'],
             ['post', [['test' => 'test']], '{"test": "test"}', 'application/json', 500, 'json'],
             ['delete', ['id'], '', 'application/json', 500, 'json'],
             ['get', [null], $apiProblemResponse, 'application/problem+json', 500, 'json', '\Matryoshka\Model\Wrapper\Rest\Exception\ApiProblem\DomainException'],
             ['get', ['id'], '', 'application/problem+json', 502, 'json', '\Matryoshka\Model\Wrapper\Rest\Exception\ApiProblem\DomainException'],
-            ['get', [null], '', 'application/json', 502, 'invalid-format', '\Matryoshka\Model\Wrapper\Rest\Exception\InvalidFormatException'],
+            ['get', ['id'], '', 'application/invalid-response-format', 502, 'json', '\Matryoshka\Model\Wrapper\Rest\Exception\InvalidFormatException'],
+            ['get', ['id'], null, '', 502, 'json'], //content-type missing
+
+            //Bad requests
+            ['post', [['test' => 'test']], '', 'application/json', 502, 'invalid-request-format', '\Matryoshka\Model\Wrapper\Rest\Exception\InvalidFormatException'],
         ];
     }
 
@@ -85,12 +90,6 @@ class RestClientTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertSame($this->restClient, $this->restClient->setRequestFormat('json'));
         $this->assertSame('json', $this->restClient->getRequestFormat());
-    }
-
-    public function testGetSetResponseFormat()
-    {
-        $this->assertSame($this->restClient, $this->restClient->setResponseFormat('json'));
-        $this->assertSame('json', $this->restClient->getResponseFormat());
     }
 
     public function testGetSetBaseRequest()
@@ -128,7 +127,7 @@ class RestClientTest extends \PHPUnit_Framework_TestCase
      * @param $contentResponse
      * @dataProvider providerServiceResponse
      */
-    public function testHttpMethod($method, array $params, $contentResponse, $typeResponse)
+    public function testHttpMethod($method, array $params, $contentResponse, $responseContentType, $typeResponse)
     {
         $httpClient = $this->getMockBuilder('Zend\Http\Client')
             ->disableOriginalConstructor()
@@ -137,6 +136,7 @@ class RestClientTest extends \PHPUnit_Framework_TestCase
 
         $response = new Response();
         $response->setContent($contentResponse);
+        $response->getHeaders()->addHeaderLine('Content-Type', $responseContentType);
 
         $httpClient->expects($this->any())
             ->method('dispatch')
@@ -147,7 +147,6 @@ class RestClientTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($response));
 
         $client = new RestClient('test', $httpClient);
-        $client->setResponseFormat($typeResponse);
         $profiler = $this->getMock('Matryoshka\Model\Wrapper\Rest\Profiler\ProfilerInterface');
 
         $client->setRequestFormat($typeResponse);
@@ -183,7 +182,9 @@ class RestClientTest extends \PHPUnit_Framework_TestCase
 
         $response = new Response();
         $response->setContent($responseContent);
-        $response->getHeaders()->addHeaderLine('Content-Type: ' . $responseContentType);
+        if ($responseContentType) {
+            $response->getHeaders()->addHeaderLine('Content-Type: ' . $responseContentType);
+        }
         $response->setStatusCode($responseStatusCode);
 
 
@@ -196,7 +197,6 @@ class RestClientTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($response));
 
         $client = new RestClient('test', $httpClient);
-        $client->setResponseFormat($format);
         $client->setRequestFormat($format);
 
         $this->setExpectedException($exceptionType);
