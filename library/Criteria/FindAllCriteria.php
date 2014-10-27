@@ -118,7 +118,7 @@ class FindAllCriteria extends AbstractCriteria implements PaginableCriteriaInter
             throw new Exception\RuntimeException('Offset unsupported without limit. Use page() or set a limit prior to call offset()');
         }
 
-        $this->page(ceil($this->offset / $this->limit));
+        $this->page(ceil($offset / $this->limit));
 
         return parent::offset($offset);
     }
