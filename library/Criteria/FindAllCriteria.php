@@ -27,7 +27,7 @@ class FindAllCriteria extends AbstractCriteria implements PaginableCriteriaInter
     /**
      * @var int
      */
-    protected $page = 1;
+    protected $page = null;
 
     /**
      * @var string
@@ -62,6 +62,14 @@ class FindAllCriteria extends AbstractCriteria implements PaginableCriteriaInter
     }
 
     /**
+     * @return string
+     */
+    public function getPageParam()
+    {
+        return $this->pageParamName;
+    }
+
+    /**
      * Set the page size parameter for paginated requests.
      *
      * @param string $name
@@ -71,6 +79,14 @@ class FindAllCriteria extends AbstractCriteria implements PaginableCriteriaInter
     {
         $this->pageSizeParamName = (string) $name;
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPageSizeParam()
+    {
+        return $this->pageSizeParamName;
     }
 
     /**
@@ -86,7 +102,7 @@ class FindAllCriteria extends AbstractCriteria implements PaginableCriteriaInter
     /**
      * @return string
      */
-    public function getTotalItemsParamName()
+    public function getTotalItemsParam()
     {
         return $this->totalItemsParamName;
     }
