@@ -192,9 +192,7 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
         }
 
         $request->getHeaders()->addHeaderLine('Content-Type', 'application/' . $this->getRequestFormat())
-                              ->addHeaderLine('Accept', 'application/json');
-                              //TODO: ->addHeaderLine('Accept', 'application/xml');
-
+                              ->addHeader($this->getResponseDecoder()->getAcceptHeader());
         return $request;
     }
 

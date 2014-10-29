@@ -5,6 +5,7 @@ use Zend\Http\Request;
 use Zend\Http\Response;
 use Matryoshka\Model\Wrapper\Rest\Criteria\FindAllCriteria;
 use Zend\Paginator\Adapter\AdapterInterface;
+use Matryoshka\Model\Wrapper\Rest\Paginator\RestPaginatorAdapter;
 
 class FindAllCriteriaTest extends \PHPUnit_Framework_TestCase
 {
@@ -143,7 +144,8 @@ class FindAllCriteriaTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($restClient));
 
         $paginator = $this->criteria->getPaginatorAdapter($model);
-        $this->assertInstanceOf('\Zend\Paginator\Adapter\AdapterInterface', $paginator);
+        $this->assertInstanceOf('\Matryoshka\Model\Wrapper\Rest\Paginator\RestPaginatorAdapter', $paginator);
+        $this->assertSame($this->criteria->getTotalItemsParam(), $paginator->getTotalItemsParamName());
     }
 
 

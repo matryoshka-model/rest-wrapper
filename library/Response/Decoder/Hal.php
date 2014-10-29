@@ -13,11 +13,20 @@ use Zend\Json\Json;
 use Zend\Stdlib\ArrayUtils;
 use Matryoshka\Model\Wrapper\Rest\Exception;
 use ZendXml\Security;
+use Zend\Http\Header\Accept;
 
 class Hal implements DecoderInterface
 {
 
     protected $lastPayload;
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getAcceptHeader()
+    {
+        return (new Accept())->addMediaType('application/json');
+    }
 
     /**
      * @return array|null

@@ -101,4 +101,16 @@ class HalTest extends \PHPUnit_Framework_TestCase
         $response->getHeaders()->addHeaderLine('Content-Type', 'application/invalid');
         $this->decoder->decode($response);
     }
+
+    public function testGetLastPayLoad()
+    {
+        $this->assertNull($this->decoder->getLastPayload());
+    }
+
+    public function testGetAcceptHeader()
+    {
+        $accept = $this->decoder->getAcceptHeader();
+        $this->assertInstanceOf('\Zend\Http\Header\Accept', $accept);
+        $this->assertTrue((bool) $accept->match('application/json'));
+    }
 }

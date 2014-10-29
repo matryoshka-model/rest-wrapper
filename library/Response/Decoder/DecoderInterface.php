@@ -9,6 +9,8 @@
 namespace Matryoshka\Model\Wrapper\Rest\Response\Decoder;
 
 use Zend\Http\Response;
+use Zend\Http\Header\Accept;
+
 interface DecoderInterface
 {
     /**
@@ -20,4 +22,9 @@ interface DecoderInterface
      * @return array|null
      */
     public function getLastPayload();
+
+    /**
+     * @return Accept
+     */
+    public function getAcceptHeader();
 }
