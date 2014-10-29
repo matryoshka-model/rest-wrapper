@@ -299,7 +299,8 @@ class RestClient implements RestClientInterface, ProfilerAwareInterface
             }
             $exception->setAdditionalDetails($bodyDecodeResponse);
         } else {
-            $exception = new Exception\InvalidResponseException($response->getBody(), $response->getStatusCode());
+            $exception = new Exception\InvalidResponseException($response->getReasonPhrase(), $response->getStatusCode());
+            $exception->setResponse($response);
         }
 
         return $exception;

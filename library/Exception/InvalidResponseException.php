@@ -8,9 +8,21 @@
  */
 namespace Matryoshka\Model\Wrapper\Rest\Exception;
 
+use Zend\Http\Response;
 /**
  * Class InvalidResponseException
  */
 class InvalidResponseException extends \DomainException implements ExceptionInterface
 {
+    protected $response;
+
+    public function setResponse(Response $response)
+    {
+        $this->response = $response;
+    }
+
+    public function getResponse()
+    {
+        return $this->response;
+    }
 }

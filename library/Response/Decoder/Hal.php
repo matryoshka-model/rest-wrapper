@@ -40,7 +40,9 @@ class Hal implements DecoderInterface
     {
         $headers = $response->getHeaders();
         if (!$headers->has('Content-Type')) {
-            throw new Exception\InvalidResponseException('Content-Type missing');
+            $exception = new Exception\InvalidResponseException('Content-Type missing');
+            $exception->setResponse($response);
+            throw $exception;
         }
         /* @var $contentType \Zend\Http\Header\ContentType */
         $contentType = $headers->get('Content-Type');
