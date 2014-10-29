@@ -83,7 +83,7 @@ class RestPaginatorAdapter implements AdapterInterface
     public function getItems($offset, $itemCountPerPage)
     {
         $criteria = clone $this->criteria;
-        $criteria->limit($itemCountPerPage)->offset($offset);
+        $criteria->setLimit($itemCountPerPage)->setOffset($offset);
 
         $resultSet = $this->model->find($criteria);
 

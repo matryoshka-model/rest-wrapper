@@ -25,7 +25,7 @@ class FindAllCriteria extends AbstractCriteria implements PaginableCriteriaInter
 {
 
     /**
-     * @var int
+     * @var int|null
      */
     protected $page = null;
 
@@ -128,25 +128,44 @@ class FindAllCriteria extends AbstractCriteria implements PaginableCriteriaInter
     /**
      * {@inheritdoc}
      */
-    public function offset($offset)
+    public function setOffset($offset)
     {
-        if (null === $this->limit) {
-            throw new Exception\RuntimeException('Offset unsupported without limit. Use page() or set a limit prior to call offset()');
+        if (null === $offset) {
+            $this->page = null;
+            $this->offset = null;
+            return $this;
         }
 
-        $this->page(ceil($offset / $this->limit));
+        if (null === $this->limit) {
+            throw new Exception\RuntimeException(__METHOD__ .'() unsupported without limit. Use setPage() or set a limit prior to call '. __METHOD__ . '()');
+        }
 
-        return parent::offset($offset);
+        $this->offset = (int) $offset;
+        $this->page = ceil($this->offset / $this->limit);
+        return $this;
     }
 
     /**
-     * @param int $page
+     * Set Page
+     *
+     * This method will reset the offset value.
+     *
+     * @param int|null $page
      * @return $this
      */
-    public function page($page)
+    public function setPage($page)
     {
-        $this->page = (int) $page;
+        $this->page = null === $page ? null : (int) $page;
+        $this->offset = null;
         return $this;
+    }
+
+    /**
+     * @return int!null
+     */
+    public function getPage()
+    {
+        return $this->page;
     }
 
     /**

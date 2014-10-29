@@ -20,6 +20,38 @@ class FindAllCriteriaTest extends \PHPUnit_Framework_TestCase
         $this->criteria = new FindAllCriteria();
     }
 
+    public function testGetSetOffset()
+    {
+        $this->criteria->setLimit(10);
+        $this->assertNull($this->criteria->getOffset()); //Test default
+
+        $offset = 20;
+        $this->assertSame($this->criteria, $this->criteria->setOffset($offset));
+        $this->assertAttributeEquals($offset, 'offset', $this->criteria);
+        $this->assertSame($offset, $this->criteria->getOffset());
+
+        $offset = null;
+        $this->assertSame($this->criteria, $this->criteria->setOffset($offset));
+        $this->assertAttributeEquals($offset, 'offset', $this->criteria);
+        $this->assertSame($offset, $this->criteria->getOffset());
+    }
+
+    public function testGetSetPage()
+    {
+        $this->assertNull($this->criteria->getPage()); //Test default
+
+        $page = 10;
+        $this->assertSame($this->criteria, $this->criteria->setPage($page));
+        $this->assertAttributeEquals($page, 'page', $this->criteria);
+        $this->assertAttributeEquals(null, 'offset', $this->criteria);
+        $this->assertSame($page, $this->criteria->getPage());
+
+        $page = null;
+        $this->assertSame($this->criteria, $this->criteria->setPage($page));
+        $this->assertAttributeEquals($page, 'page', $this->criteria);
+        $this->assertAttributeEquals(null, 'offset', $this->criteria);
+        $this->assertSame($page, $this->criteria->getPage());
+    }
 
     public function testGetSetPageParam()
     {
@@ -54,7 +86,7 @@ class FindAllCriteriaTest extends \PHPUnit_Framework_TestCase
     public function testOffsetShouldThrowExcepetionWithoutLimit()
     {
         $this->setExpectedException('\Matryoshka\Model\Exception\RuntimeException');
-        $this->criteria->offset(33);
+        $this->criteria->setOffset(33);
     }
 
     public function applyDataProvider()
@@ -90,18 +122,18 @@ class FindAllCriteriaTest extends \PHPUnit_Framework_TestCase
 
         if ($limit) {
             $expectedQuery[$this->criteria->getPageSizeParam()] = $limit;
-            $this->assertSame($this->criteria, $this->criteria->limit($limit));
+            $this->assertSame($this->criteria, $this->criteria->setLimit($limit));
         }
 
         if ($offset) {
             $page = ceil($offset / $limit);
-            $this->assertSame($this->criteria, $this->criteria->offset($offset));
+            $this->assertSame($this->criteria, $this->criteria->setOffset($offset));
         }
 
         if ($page) {
             $expectedQuery[$this->criteria->getPageParam()] = $page;
             if (!$offset) {
-                $this->assertSame($this->criteria, $this->criteria->page($page));
+                $this->assertSame($this->criteria, $this->criteria->setPage($page));
             }
         }
 
