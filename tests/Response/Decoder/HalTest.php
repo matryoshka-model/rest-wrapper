@@ -24,11 +24,13 @@ class HalTest extends \PHPUnit_Framework_TestCase
      */
     public function decoderDataProvider()
     {
+        //Test simple Json response
         $response1 = new Response();
         $response1->setContent('{"test":"test","test1":"test1"}');
         $response1->getHeaders()->addHeaderLine('Content-Type', 'application/json');
         $result1 = ['test' => 'test', 'test1' => 'test1'];
 
+        //Test HAL json
         $response2 = new Response();
         $response2->setContent('{"_links":{"self":{"href":"http://test/user"}},"_embedded":{"users":[{"test":"test","test1":"test1","_links":{"self":{"href":"http://test/user/1"}}},{"test":"foo","test1":"baz","_links":{"self":{"href":"http://test/user/2"}}}]}}');
         $response2->getHeaders()->addHeaderLine('Content-Type', 'application/hal+json');
@@ -36,6 +38,26 @@ class HalTest extends \PHPUnit_Framework_TestCase
             ['test' => 'test', 'test1' => 'test1'],
             ['test' => 'foo', 'test1' => 'baz'],
         ];
+
+        //Test empty string
+        $response3 = new Response();
+        $response3->setContent('');
+        $response3->getHeaders()->addHeaderLine('Content-Type', 'application/json');
+        $result3 = [];
+
+        //Test empty Json list
+        $response4 = new Response();
+        $response4->setContent('[]');
+        $response4->getHeaders()->addHeaderLine('Content-Type', 'application/json');
+        $result4 = [];
+
+
+        //Test empty HAL json
+        $response5 = new Response();
+        $response5->setContent('{"_links":{"self":{"href":"http:\/\/example.net\/user"}},"_embedded":{"users":[]},"page_count":0,"page_size":10,"total_items":0}');
+        $response5->getHeaders()->addHeaderLine('Content-Type', 'application/hal+json');
+        $result5 = [];
+
 
 //         $response3 = new Response();
 //         $response3->setContent('<resource rel="self" href="/" xmlns:ex="http://example.org/rels/">
@@ -67,7 +89,9 @@ class HalTest extends \PHPUnit_Framework_TestCase
         return [
             [$response1, $result1],
             [$response2, $result2],
-//             [$response3, $result3],
+            [$response3, $result3],
+            [$response4, $result4],
+            [$response5, $result5],
         ];
     }
 

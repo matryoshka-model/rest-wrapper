@@ -15,6 +15,7 @@ interface DecoderInterface
 {
     /**
      * @param Response $response
+     * @return array
      */
     public function decode(Response $response);
 

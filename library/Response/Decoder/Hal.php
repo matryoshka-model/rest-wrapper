@@ -36,6 +36,9 @@ class Hal implements DecoderInterface
         return $this->lastPayload;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function decode(Response $response)
     {
         $headers = $response->getHeaders();
@@ -70,7 +73,7 @@ class Hal implements DecoderInterface
             return $this->decodeHal($payload);
         }
         //else
-        return $payload;
+        return (array) $payload;
     }
 
     /**
@@ -87,8 +90,8 @@ class Hal implements DecoderInterface
             $embedded = $data['_embedded'];
             if (ArrayUtils::hasStringKeys($embedded)) {
                 $resourceNode = array_shift($embedded);
+                $data = [];
                 if (ArrayUtils::isList($resourceNode)) {
-                    $data = [];
                     foreach ($resourceNode as $resource) {
                         $data[] = $this->decodeHal($resource);
                     }
