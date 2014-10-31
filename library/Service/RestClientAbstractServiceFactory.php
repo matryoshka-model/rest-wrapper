@@ -23,7 +23,7 @@ class RestClientAbstractServiceFactory implements AbstractFactoryInterface
     /**
      * @var string
      */
-    protected $configKey = 'matryoshka-rest'; // TODO: choose correct config node name
+    protected $configKey = 'matryoshka-rest';
 
     /**
      * @var array

@@ -10,17 +10,15 @@ namespace Matryoshka\Model\Wrapper\Rest;
 
 use Matryoshka\Model\Wrapper\Rest\UriResourceStrategy\DefaultStrategy;
 use Matryoshka\Model\Wrapper\Rest\UriResourceStrategy\UriResourceStrategyInterface;
+use Matryoshka\Service\Api\Client\HttpApi;
 use Zend\Http\Client;
 use Zend\Http\Request;
 use Zend\Http\Response;
-use Zend\Json\Json;
-use ZendXml\Security;
-use Zend\Http\Header\ContentType;
 
 /**
  * Class RestClient
  */
-class RestClient implements RestClientInterface
+class RestClient extends HttpApi implements RestClientInterface
 {
 
     /**

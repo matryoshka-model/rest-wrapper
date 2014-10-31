@@ -62,7 +62,7 @@ class RestClientAbstractServiceFactoryTest extends \PHPUnit_Framework_TestCase
 
         $sm->setService('Config', $config);
 
-        $profiler = $this->getMock('Matryoshka\Model\Wrapper\Rest\Profiler\ProfilerInterface');
+        $profiler = $this->getMock('Matryoshka\Service\Api\Profiler\ProfilerInterface');
         $sm->setService('Profiler', $profiler);
 
         $strategy = $this->getMock('Matryoshka\Model\Wrapper\Rest\UriResourceStrategy\UriResourceStrategyInterface');

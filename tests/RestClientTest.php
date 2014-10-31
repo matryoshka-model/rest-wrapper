@@ -52,13 +52,13 @@ class RestClientTest extends \PHPUnit_Framework_TestCase
             ['get', [null], '{"test": "test"}', 'application/json', 500, 'json'],
             ['post', [['test' => 'test']], '{"test": "test"}', 'application/json', 500, 'json'],
             ['delete', ['id'], '', 'application/json', 500, 'json'],
-            ['get', [null], $apiProblemResponse, 'application/problem+json', 500, 'json', '\Matryoshka\Model\Wrapper\Rest\Exception\ApiProblem\DomainException'],
-            ['get', ['id'], '', 'application/problem+json', 502, 'json', '\Matryoshka\Model\Wrapper\Rest\Exception\ApiProblem\DomainException'],
-            ['get', ['id'], '', 'application/invalid-response-format', 502, 'json', '\Matryoshka\Model\Wrapper\Rest\Exception\InvalidFormatException'],
+            ['get', [null], $apiProblemResponse, 'application/problem+json', 500, 'json', '\Matryoshka\Service\Api\Exception\ApiProblem\DomainException'],
+            ['get', ['id'], '', 'application/problem+json', 502, 'json', '\Matryoshka\Service\Api\Exception\ApiProblem\DomainException'],
+            ['get', ['id'], '', 'application/invalid-response-format', 502, 'json', '\Matryoshka\Service\Api\Exception\InvalidFormatException'],
             ['get', ['id'], null, '', 502, 'json'], //content-type missing
 
             //Bad requests
-            ['post', [['test' => 'test']], '', 'application/json', 502, 'invalid-request-format', '\Matryoshka\Model\Wrapper\Rest\Exception\InvalidFormatException'],
+            ['post', [['test' => 'test']], '', 'application/json', 502, 'invalid-request-format', '\Matryoshka\Service\Api\Exception\InvalidFormatException'],
         ];
     }
 
@@ -80,48 +80,6 @@ class RestClientTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($strategy, $this->restClient->getUriResourceStrategy());
     }
 
-    public function testGetSetValidStatusCodes()
-    {
-        $this->assertSame($this->restClient, $this->restClient->setValidStatusCodes([200, 201]));
-        $this->assertCount(2, $this->restClient->getValidStatusCodes());
-    }
-
-    public function testGetSetRequestFormat()
-    {
-        $this->assertSame($this->restClient, $this->restClient->setRequestFormat('json'));
-        $this->assertSame('json', $this->restClient->getRequestFormat());
-    }
-
-    public function testGetSetBaseRequest()
-    {
-        $request = new Request();
-        $this->assertSame($this->restClient, $this->restClient->setBaseRequest($request));
-        $this->assertSame($request, $this->restClient->getBaseRequest());
-    }
-
-    public function testGetLastRequest()
-    {
-        $this->assertNull($this->restClient->getLastRequest());
-    }
-
-    public function testGetLastResponse()
-    {
-        $this->assertNull($this->restClient->getLastResponse());
-    }
-
-
-    public function testGetLastResponseData()
-    {
-        $this->assertNull($this->restClient->getLastResponseData());
-    }
-
-    public function testCloneBaseRequest()
-    {
-        $request = $this->restClient->getBaseRequest();
-        $cloneRequest = $this->restClient->cloneBaseRequest();
-        $this->assertInstanceOf('Zend\Http\Request', $cloneRequest);
-        $this->assertNotSame($request, $cloneRequest);
-    }
 
     /**
      * @param $contentResponse
@@ -147,7 +105,7 @@ class RestClientTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($response));
 
         $client = new RestClient('test', $httpClient);
-        $profiler = $this->getMock('Matryoshka\Model\Wrapper\Rest\Profiler\ProfilerInterface');
+        $profiler = $this->getMock('Matryoshka\Service\Api\Profiler\ProfilerInterface');
 
         $client->setRequestFormat($typeResponse);
         $client->setProfiler($profiler);
@@ -190,7 +148,7 @@ class RestClientTest extends \PHPUnit_Framework_TestCase
         $responseContentType,
         $responseStatusCode,
         $format,
-        $exceptionType = '\Matryoshka\Model\Wrapper\Rest\Exception\InvalidResponseException')
+        $exceptionType = '\Matryoshka\Service\Api\Exception\InvalidResponseException')
     {
         $httpClient = $this->getMockBuilder('Zend\Http\Client')
             ->disableOriginalConstructor()
@@ -225,7 +183,7 @@ class RestClientTest extends \PHPUnit_Framework_TestCase
     {
         $this->restClient->setRequestFormat('invalid format');
 
-        $this->setExpectedException('\Matryoshka\Model\Wrapper\Rest\Exception\InvalidFormatException');
+        $this->setExpectedException('\Matryoshka\Service\Api\Exception\InvalidFormatException');
         $this->restClient->prepareRequest('post', null, ['foo' => 'baz']);
     }
 
