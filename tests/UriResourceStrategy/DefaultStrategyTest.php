@@ -18,10 +18,9 @@ class DefaultStrategyTest extends \PHPUnit_Framework_TestCase
 
     public function testConfigureUri()
     {
-        $uri = new Uri();
-        $uri->setHost('http://test');
+        $uri = new Uri('http://example.com/');
 
         $this->assertSame($uri, $this->strategy->configureUri($uri, 'test', 12));
-        $this->assertSame('//http://test/test/12', $uri->toString());
+        $this->assertSame('http://example.com/test/12', $uri->toString());
     }
 }
