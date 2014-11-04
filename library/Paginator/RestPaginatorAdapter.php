@@ -86,19 +86,23 @@ class RestPaginatorAdapter implements AdapterInterface
         $criteria = clone $this->criteria;
         $criteria->setLimit($itemCountPerPage)->setOffset($offset);
 
+        if ($criteria->getPage() === null) {
+            $criteria->setPage(1);
+        }
+
         $resultSet = $this->model->find($criteria);
 
         /* @var $restClient RestClientInterface */
         $restClient = $this->model->getDataGateway();
-        $collectionData = (array) $restClient->getLastResponseData();
+        $payloadData = (array) $restClient->getLastResponseData();
 
         $this->count = null;
-        if (isset($collectionData[$this->totalItemsParamName])) {
-            $this->count = $collectionData[$this->totalItemsParamName];
+        if (isset($payloadData[$this->totalItemsParamName])) {
+            $this->count = $payloadData[$this->totalItemsParamName];
         }
 
-        $offset            = $this->criteria->getOffset();
-        $itemCountPerPage  = $this->criteria->getLimit();
+        $offset            = $criteria->getOffset();
+        $itemCountPerPage  = $criteria->getLimit();
         $cacheKey = $offset . '-' . $itemCountPerPage;
 
         $this->preloadCache = [$cacheKey => $resultSet];

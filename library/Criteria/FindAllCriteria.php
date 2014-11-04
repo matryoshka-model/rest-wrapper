@@ -141,14 +141,14 @@ class FindAllCriteria extends AbstractCriteria implements PaginableCriteriaInter
         }
 
         $this->offset = (int) $offset;
-        $this->page = ceil($this->offset / $this->limit);
+        $this->page = (int) ceil($this->offset / $this->limit) + 1;
         return $this;
     }
 
     protected function updateOffset()
     {
         if ($this->limit && $this->page) {
-            $this->offset = $this->limit * ($this->page -1);
+            $this->offset = $this->limit * ($this->page - 1);
         } else {
             $this->offset = null;
         }
@@ -201,10 +201,6 @@ class FindAllCriteria extends AbstractCriteria implements PaginableCriteriaInter
 
         if (isset($payloadData[$this->pageSizeParamName])) {
             $this->limit = (int) $payloadData[$this->pageSizeParamName];
-        }
-
-        if (isset($payloadData[$this->pageParamName])) {
-            $this->page = (int) $payloadData[$this->pageParamName];
         }
 
         $this->updateOffset();

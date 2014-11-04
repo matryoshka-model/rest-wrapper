@@ -126,7 +126,7 @@ class FindAllCriteriaTest extends \PHPUnit_Framework_TestCase
         }
 
         if ($offset) {
-            $page = ceil($offset / $limit);
+            $page = ceil($offset / $limit) + 1;
             $this->assertSame($this->criteria, $this->criteria->setOffset($offset));
         }
 
@@ -139,8 +139,15 @@ class FindAllCriteriaTest extends \PHPUnit_Framework_TestCase
 
         $restClient = $this->getMockBuilder('Matryoshka\Model\Wrapper\Rest\RestClient')
             ->disableOriginalConstructor()
-            ->setMethods(['get'])
+            ->setMethods(['get', 'getLastResponseData'])
             ->getMock();
+
+        $restClient->expects($this->atLeastOnce())
+                   ->method('getLastResponseData')
+                   ->will($this->returnValue([
+                       "page_count" => $page, "page_size" => $limit, "total_items" => 1
+                   ]));
+
 
         $restClient->expects($this->atLeastOnce())
             ->method('get')
