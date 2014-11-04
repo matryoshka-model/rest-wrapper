@@ -40,6 +40,8 @@ class RestPaginatorAdapter implements AdapterInterface
      */
     protected $totalItemsParamName = 'total_items';
 
+    protected $preloadCache = [];
+
     /**
 	 * @param AbstractModel $model
 	 * @param FindAllCriteria $criteria
@@ -73,15 +75,14 @@ class RestPaginatorAdapter implements AdapterInterface
         return $this->totalItemsParamName;
     }
 
-    /**
-     * Returns an result set of items for a page.
-     *
-     * @param  int $offset           Page offset
-     * @param  int $itemCountPerPage Number of items per page
-     * @return HydratingResultSet
-     */
-    public function getItems($offset, $itemCountPerPage)
+    public function preload($offset = null, $itemCountPerPage = null)
     {
+        $cacheKey = $offset . '-' . $itemCountPerPage;
+
+        if (isset($this->preloadCache[$cacheKey])) {
+            return $this->preloadCache[$cacheKey];
+        }
+
         $criteria = clone $this->criteria;
         $criteria->setLimit($itemCountPerPage)->setOffset($offset);
 
@@ -96,7 +97,25 @@ class RestPaginatorAdapter implements AdapterInterface
             $this->count = $collectionData[$this->totalItemsParamName];
         }
 
+        $offset            = $this->criteria->getOffset();
+        $itemCountPerPage  = $this->criteria->getLimit();
+        $cacheKey = $offset . '-' . $itemCountPerPage;
+
+        $this->preloadCache = [$cacheKey => $resultSet];
+
         return $resultSet;
+    }
+
+    /**
+     * Returns an result set of items for a page.
+     *
+     * @param  int $offset           Page offset
+     * @param  int $itemCountPerPage Number of items per page
+     * @return HydratingResultSet
+     */
+    public function getItems($offset, $itemCountPerPage)
+    {
+        return $this->preload($offset, $itemCountPerPage);
     }
 
     /**
