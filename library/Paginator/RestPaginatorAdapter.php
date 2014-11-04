@@ -84,7 +84,14 @@ class RestPaginatorAdapter implements AdapterInterface
         }
 
         $criteria = clone $this->criteria;
-        $criteria->setLimit($itemCountPerPage)->setOffset($offset);
+
+        if ($itemCountPerPage !== null) {
+            $criteria->setLimit($itemCountPerPage);
+        }
+
+        if ($offset !== null) {
+            $offset->setOffset($offset);
+        }
 
         if ($criteria->getPage() === null) {
             $criteria->setPage(1);
