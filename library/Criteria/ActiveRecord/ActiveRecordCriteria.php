@@ -6,7 +6,7 @@
  * @copyright   Copyright (c) 2014, Ripa Club
  * @license     http://opensource.org/licenses/BSD-2-Clause Simplified BSD License
  */
-namespace Matryoshka\Model\Wrapper\Rest\Criteria;
+namespace Matryoshka\Model\Wrapper\Rest\Criteria\ActiveRecord;
 
 use Matryoshka\Model\Criteria\ActiveRecord\AbstractCriteria;
 use Matryoshka\Model\ModelInterface;
@@ -20,28 +20,9 @@ use Zend\Http\Response;
  */
 class ActiveRecordCriteria extends AbstractCriteria
 {
-    /**
-     * @param ModelInterface $model
-     * @return int|null
-     */
-    public function applyDelete(ModelInterface $model)
-    {
-        /* @var $client RestClient */
-        $client = $model->getDataGateway();
-        $client->delete($this->getId());
-
-        switch ($client->getLastResponse()->getStatusCode()) {
-            case Response::STATUS_CODE_200:
-            case Response::STATUS_CODE_204:
-                return 1;
-        }
-        return null;
-    }
 
     /**
-     * Apply
-     * @param ModelInterface $model
-     * @return array
+     * {@inheritdoc}
      */
     public function apply(ModelInterface $model)
     {
@@ -52,9 +33,7 @@ class ActiveRecordCriteria extends AbstractCriteria
     }
 
     /**
-     * @param ModelInterface $model
-     * @param array $data
-     * @return int|null
+     * {@inheritdoc}
      */
     public function applyWrite(ModelInterface $model, array &$data)
     {
@@ -73,6 +52,23 @@ class ActiveRecordCriteria extends AbstractCriteria
                 return 1;
             case Response::STATUS_CODE_204:
                 return 0;
+        }
+        return null;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function applyDelete(ModelInterface $model)
+    {
+        /* @var $client RestClient */
+        $client = $model->getDataGateway();
+        $client->delete($this->getId());
+
+        switch ($client->getLastResponse()->getStatusCode()) {
+            case Response::STATUS_CODE_200:
+            case Response::STATUS_CODE_204:
+                return 1;
         }
         return null;
     }

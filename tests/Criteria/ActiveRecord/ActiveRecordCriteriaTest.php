@@ -1,7 +1,7 @@
 <?php
-namespace MatryoshkaModelWrapperRestTest\Criteria;
+namespace MatryoshkaModelWrapperRestTest\Criteria\ActiveRecord;
 
-use Matryoshka\Model\Wrapper\Rest\Criteria\ActiveRecordCriteria;
+use Matryoshka\Model\Wrapper\Rest\Criteria\ActiveRecord\ActiveRecordCriteria;
 use Zend\Http\Request;
 use Zend\Http\Response;
 
