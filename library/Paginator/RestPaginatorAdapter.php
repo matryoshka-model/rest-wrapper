@@ -16,6 +16,23 @@ use Matryoshka\Model\ResultSet\HydratingResultSet;
 use Matryoshka\Model\Exception;
 /**
  * Class RestPaginatorAdapter
+ *
+ * In order to make this adapter working with Zend\Paginator we need to know
+ * the total items count prior to call getItems().
+ *
+ * Two alternatives are available:
+ *
+ * - call getItems() prior count()
+ *
+ * - call preload() prior to call count()
+ *
+ * In both case, if $offset and $itemCountPerPage will be the same in later calls,
+ * resultset already loaded will be reused, avoiding futher remote requests.
+ *
+ *
+ *
+ *
+ *
  */
 class RestPaginatorAdapter implements AdapterInterface
 {
@@ -40,6 +57,9 @@ class RestPaginatorAdapter implements AdapterInterface
      */
     protected $totalItemsParamName = 'total_items';
 
+    /**
+     * @var array
+     */
     protected $preloadCache = [];
 
     /**
@@ -49,10 +69,6 @@ class RestPaginatorAdapter implements AdapterInterface
 	 */
     public function __construct(AbstractModel $model, FindAllCriteria $criteria)
     {
-        if (!$model->getDataGateway() instanceof RestClientInterface) {
-            throw new Exception\InvalidArgumentException('Model must provide a RestClientInterface datagateway');
-        }
-
         $this->model = $model;
         $this->criteria = $criteria;
     }
@@ -75,14 +91,14 @@ class RestPaginatorAdapter implements AdapterInterface
         return $this->totalItemsParamName;
     }
 
-    public function preload($offset = null, $itemCountPerPage = null)
+    /**
+     * @param string $offset
+     * @param string $itemCountPerPage
+     * @throws Exception\InvalidArgumentException
+     * @return \Matryoshka\Model\ResultSet\ResultSetInterface
+     */
+    protected function loadItems($offset = null, $itemCountPerPage = null)
     {
-        $cacheKey = $offset . '-' . $itemCountPerPage;
-
-        if (isset($this->preloadCache[$cacheKey])) {
-            return $this->preloadCache[$cacheKey];
-        }
-
         $criteria = clone $this->criteria;
 
         if ($itemCountPerPage !== null) {
@@ -90,17 +106,20 @@ class RestPaginatorAdapter implements AdapterInterface
         }
 
         if ($offset !== null) {
-            $offset->setOffset($offset);
+            $criteria->setOffset($offset);
         }
 
         if ($criteria->getPage() === null) {
             $criteria->setPage(1);
         }
 
-        $resultSet = $this->model->find($criteria);
-
         /* @var $restClient RestClientInterface */
         $restClient = $this->model->getDataGateway();
+        if (!$restClient instanceof RestClientInterface) {
+            throw new Exception\InvalidArgumentException('Model must provide a RestClientInterface datagateway');
+        }
+
+        $resultSet = $this->model->find($criteria);
         $payloadData = (array) $restClient->getLastResponseData();
 
         $this->count = null;
@@ -118,7 +137,35 @@ class RestPaginatorAdapter implements AdapterInterface
     }
 
     /**
-     * Returns an result set of items for a page.
+     * Preload items matching settings specified by the criteria object
+     *
+     * This methods allows to preload item using the passed criteria.
+     * Example:
+     *
+     * // Assume page e item-count-per page are known
+     * $page = 1;
+     * $itemCountPerPage = 5;
+     *
+     * // Assume a Rest model service
+     * $service->getPaginatorCriteria()->setPage($page)->setLimit($itemCountPerPage);
+     *
+     * // assume we're using RestPaginatorAdapter
+     * $adapter = $service->getPaginatorAdapter();
+     * $adapter->preload();
+     *
+     * // Then, we can use Paginator normally
+     * $paginator = new Paginator($adapter);
+     * $paginator->setCurrentPageNumber($page)
+     *            ->setItemCountPerPage($itemCountPerPage);
+     *
+     */
+    public function preload()
+    {
+        $this->loadItems();
+    }
+
+    /**
+     * Returns an result set of items for a page
      *
      * @param  int $offset           Page offset
      * @param  int $itemCountPerPage Number of items per page
@@ -126,7 +173,13 @@ class RestPaginatorAdapter implements AdapterInterface
      */
     public function getItems($offset, $itemCountPerPage)
     {
-        return $this->preload($offset, $itemCountPerPage);
+        $cacheKey = $offset . '-' . $itemCountPerPage;
+
+        if (isset($this->preloadCache[$cacheKey])) {
+            return $this->preloadCache[$cacheKey];
+        }
+
+        return $this->loadItems($offset, $itemCountPerPage);
     }
 
     /**
@@ -135,7 +188,7 @@ class RestPaginatorAdapter implements AdapterInterface
     public function count()
     {
         if (null === $this->count) {
-            throw new Exception\RuntimeException('If your API response returns the total_items value, call getItems() prior using count()');
+            throw new Exception\RuntimeException('If your API returns the total_items value, call preload() prior using count()');
         }
 
         return $this->count;

@@ -168,19 +168,9 @@ class FindAllCriteriaTest extends \PHPUnit_Framework_TestCase
 
     public function testGetPaginatorAdapter()
     {
-        $restClient = $this->getMockBuilder('Matryoshka\Model\Wrapper\Rest\RestClient')
-            ->disableOriginalConstructor()
-            ->setMethods(['get'])
-            ->getMock();
-
         $model = $this->getMockBuilder('Matryoshka\Model\AbstractModel')
             ->disableOriginalConstructor()
-            ->setMethods(['getDataGateway'])
             ->getMock();
-
-        $model->expects($this->atLeastOnce())
-            ->method('getDataGateway')
-            ->will($this->returnValue($restClient));
 
         $paginator = $this->criteria->getPaginatorAdapter($model);
         $this->assertInstanceOf('\Matryoshka\Model\Wrapper\Rest\Paginator\RestPaginatorAdapter', $paginator);

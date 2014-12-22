@@ -136,12 +136,16 @@ class FindAllCriteria extends AbstractCriteria implements PaginableCriteriaInter
             return $this;
         }
 
-        if (null === $this->limit) {
-            throw new Exception\RuntimeException(__METHOD__ .'() unsupported without limit. Use setPage() or set a limit prior to call '. __METHOD__ . '()');
+        if ($this->limit > 0) {
+            $this->offset = (int) $offset;
+            $this->page = (int) ceil($this->offset / $this->limit) + 1;
+        } else {
+            throw new Exception\RuntimeException(
+                __METHOD__ .'() requires that limit must be greater than zero.'
+                .' Use setPage() or set a limit prior to call '. __METHOD__ . '()'
+           );
         }
 
-        $this->offset = (int) $offset;
-        $this->page = (int) ceil($this->offset / $this->limit) + 1;
         return $this;
     }
 
