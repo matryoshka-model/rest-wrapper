@@ -12,6 +12,7 @@ use Matryoshka\Model\Criteria\ActiveRecord\AbstractCriteria;
 use Matryoshka\Model\ModelInterface;
 use Matryoshka\Model\Wrapper\Rest\RestClient;
 use Zend\Http\Response;
+use Matryoshka\Service\Api\Exception\ExceptionInterface;
 
 /**
  * Class ActiveRecordCriteria
@@ -28,7 +29,15 @@ class ActiveRecordCriteria extends AbstractCriteria
     {
         /* @var $client RestClient */
         $client = $model->getDataGateway();
-        $result =  $client->get($this->getId());
+        try {
+            $result = $client->get($this->getId());
+        } catch (ExceptionInterface $e)
+        {
+            if ($e->getCode() == Response::STATUS_CODE_404) {
+                return [];
+            } // else
+            throw $e;
+        }
         return (empty($result)) ? [] : [$result];
     }
 

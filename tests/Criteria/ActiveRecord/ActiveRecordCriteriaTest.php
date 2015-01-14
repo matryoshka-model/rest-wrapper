@@ -4,6 +4,8 @@ namespace MatryoshkaModelWrapperRestTest\Criteria\ActiveRecord;
 use Matryoshka\Model\Wrapper\Rest\Criteria\ActiveRecord\ActiveRecordCriteria;
 use Zend\Http\Request;
 use Zend\Http\Response;
+use Matryoshka\Service\Api\Exception\InvalidResponseException;
+use Matryoshka\Service\Api\Exception\ApiProblem\DomainException;
 
 class ActiveRecordCriteriaTest extends \PHPUnit_Framework_TestCase
 {
@@ -96,6 +98,56 @@ class ActiveRecordCriteriaTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($restClient));
 
         $this->assertEquals([], $this->criteria->apply($model));
+    }
+
+    public function testApplyNotFound()
+    {
+        // not found item 404
+        $restClient = $this->getMockBuilder('Matryoshka\Model\Wrapper\Rest\RestClient')
+            ->disableOriginalConstructor()
+            ->setMethods(['get'])
+            ->getMock();
+
+        $restClient->expects($this->any())
+            ->method('get')
+            ->will($this->throwException(new InvalidResponseException('Not found', 404)));
+
+
+        $model = $this->getMockBuilder('Matryoshka\Model\AbstractModel')
+            ->disableOriginalConstructor()
+            ->setMethods(['getDataGateway'])
+            ->getMock();
+
+        $model->expects($this->any())
+            ->method('getDataGateway')
+            ->will($this->returnValue($restClient));
+
+        $this->assertEquals([], $this->criteria->apply($model));
+
+        // other exceptions proxy test
+
+        // not found item 404
+        $restClient = $this->getMockBuilder('Matryoshka\Model\Wrapper\Rest\RestClient')
+            ->disableOriginalConstructor()
+            ->setMethods(['get'])
+            ->getMock();
+
+        $restClient->expects($this->any())
+            ->method('get')
+            ->will($this->throwException(new InvalidResponseException('Other error', 401)));
+
+
+        $model = $this->getMockBuilder('Matryoshka\Model\AbstractModel')
+            ->disableOriginalConstructor()
+            ->setMethods(['getDataGateway'])
+            ->getMock();
+
+        $model->expects($this->any())
+            ->method('getDataGateway')
+            ->will($this->returnValue($restClient));
+
+        $this->setExpectedException('\Matryoshka\Service\Api\Exception\InvalidResponseException');
+        $this->criteria->apply($model);
     }
 
     public function testApplyWrite()
