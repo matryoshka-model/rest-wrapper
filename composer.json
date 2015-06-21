@@ -6,7 +6,7 @@
     "require": {
         "php": ">=5.4.0",
         "zendframework/zendframework": "~2.3",
-        "matryoshka-model/matryoshka": "0.7.*@dev",
+        "matryoshka-model/matryoshka": "~0.6.0",
         "matryoshka-model/service-api": "0.4.*@dev",
         "zendframework/zendxml": "~1.0-dev",
         "zfcampus/zf-api-problem": "~1.0"
