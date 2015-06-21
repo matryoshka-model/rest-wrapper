@@ -36,4 +36,4 @@ Add the following to your `composer.json` file:
 
 ---
 
-[![Analytics](https://ga-beacon.appspot.com/UA-49655829-1/matryoshka-model/rest-wrapper)](https://github.com/igrigorik/ga-beacon)
+[![Analytics](https://ga-beacon.appspot.com/UA-49657176-2/rest-wrapper)](https://github.com/igrigorik/ga-beacon)
