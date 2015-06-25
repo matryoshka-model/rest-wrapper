@@ -24,3 +24,6 @@ notifications:
 env:
   global:
     secure: OV26hbLwT/AX03/x+AR+RRXFQgVyI1bnKY8wk4jShpjE+JGBUs0v7Vq4/xgfsKV3JX745Y3m4glOEmjk+xDGx5hoewfxW98KM8/6LGodXZbR7OQZms/8w7dLcMWJiqz9KHVWqlW3qBEPkscF4zlnFJhT2ZcnTu/BOGwEuyys390=
+cache:
+  directories:
+    - $HOME/.composer/cache
