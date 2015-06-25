@@ -10,7 +10,7 @@ namespace Matryoshka\Model\Wrapper\Rest\Criteria;
 
 
 use Matryoshka\Model\Exception;
-use Matryoshka\Model\ModelInterface;
+use Matryoshka\Model\ModelStubInterface;
 use Zend\Stdlib\Hydrator\AbstractHydrator;
 use Matryoshka\Model\Criteria\AbstractCriteria;
 use Matryoshka\Model\Wrapper\Rest\RestClient;
@@ -184,7 +184,7 @@ class FindAllCriteria extends AbstractCriteria implements PaginableCriteriaInter
     /**
      * {@inheritdoc}
      */
-    public function apply(ModelInterface $model)
+    public function apply(ModelStubInterface $model)
     {
         /* @var $client RestClient */
         $client = $model->getDataGateway();
@@ -215,7 +215,7 @@ class FindAllCriteria extends AbstractCriteria implements PaginableCriteriaInter
     /**
      * {@inheritdoc}
      */
-    public function getPaginatorAdapter(ModelInterface $model)
+    public function getPaginatorAdapter(ModelStubInterface $model)
     {
         $paginator = new RestPaginatorAdapter($model, $this);
         $paginator->setTotalItemsParamName($this->totalItemsParamName);

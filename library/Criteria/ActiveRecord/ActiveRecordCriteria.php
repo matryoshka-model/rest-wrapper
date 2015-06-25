@@ -9,7 +9,7 @@
 namespace Matryoshka\Model\Wrapper\Rest\Criteria\ActiveRecord;
 
 use Matryoshka\Model\Criteria\ActiveRecord\AbstractCriteria;
-use Matryoshka\Model\ModelInterface;
+use Matryoshka\Model\ModelStubInterface;
 use Matryoshka\Model\Wrapper\Rest\RestClient;
 use Zend\Http\Response;
 use Matryoshka\Service\Api\Exception\ExceptionInterface;
@@ -25,7 +25,7 @@ class ActiveRecordCriteria extends AbstractCriteria
     /**
      * {@inheritdoc}
      */
-    public function apply(ModelInterface $model)
+    public function apply(ModelStubInterface $model)
     {
         /* @var $client RestClient */
         $client = $model->getDataGateway();
@@ -44,7 +44,7 @@ class ActiveRecordCriteria extends AbstractCriteria
     /**
      * {@inheritdoc}
      */
-    public function applyWrite(ModelInterface $model, array &$data)
+    public function applyWrite(ModelStubInterface $model, array &$data)
     {
         /* @var $client RestClient */
         $client = $model->getDataGateway();
@@ -68,7 +68,7 @@ class ActiveRecordCriteria extends AbstractCriteria
     /**
      * {@inheritdoc}
      */
-    public function applyDelete(ModelInterface $model)
+    public function applyDelete(ModelStubInterface $model)
     {
         /* @var $client RestClient */
         $client = $model->getDataGateway();
