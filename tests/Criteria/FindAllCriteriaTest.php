@@ -1,15 +1,22 @@
 <?php
+/**
+ * REST matryoshka wrapper
+ *
+ * @link        https://github.com/matryoshka-model/rest-wrapper
+ * @copyright   Copyright (c) 2015, Ripa Club
+ * @license     http://opensource.org/licenses/BSD-2-Clause Simplified BSD License
+ */
 namespace MatryoshkaModelWrapperRestTest\Criteria;
 
-use Zend\Http\Request;
-use Zend\Http\Response;
+use Matryoshka\Model\ModelStubInterface;
 use Matryoshka\Model\Wrapper\Rest\Criteria\FindAllCriteria;
-use Zend\Paginator\Adapter\AdapterInterface;
-use Matryoshka\Model\Wrapper\Rest\Paginator\RestPaginatorAdapter;
+use Zend\Http\Response;
 
+/**
+ * Class FindAllCriteriaTest
+ */
 class FindAllCriteriaTest extends \PHPUnit_Framework_TestCase
 {
-
     /**
      * @var FindAllCriteria
      */
@@ -89,15 +96,18 @@ class FindAllCriteriaTest extends \PHPUnit_Framework_TestCase
         $this->criteria->setOffset(33);
     }
 
+    /**
+     * @return array
+     */
     public function applyDataProvider()
     {
         return [
-          [ [['test' => 'test']] ],
-          [ [['test' => 'test2']], ['foo' => 'bar'] ],
-          [ [['test' => 'test3']], ['foo' => 'bar'], 10 ],
-          [ [['test' => 'test4']], ['foo' => 'bar'], 10, 4 ],
-          [ [['test' => 'test5']], ['foo' => 'bar'], 10, null, 33 ],
-          [ [['test' => 'test5']], ['page' => 4], 2, null, 33 ],
+            [[['test' => 'test']]],
+            [[['test' => 'test2']], ['foo' => 'bar']],
+            [[['test' => 'test3']], ['foo' => 'bar'], 10],
+            [[['test' => 'test4']], ['foo' => 'bar'], 10, 4],
+            [[['test' => 'test5']], ['foo' => 'bar'], 10, null, 33],
+            [[['test' => 'test5']], ['page' => 4], 2, null, 33],
         ];
     }
 
@@ -112,7 +122,6 @@ class FindAllCriteriaTest extends \PHPUnit_Framework_TestCase
      */
     public function testApply(array $data, $query = null, $limit = null, $page = null, $offset = null)
     {
-
         $expectedQuery = [];
 
         if ($query) {
@@ -143,10 +152,16 @@ class FindAllCriteriaTest extends \PHPUnit_Framework_TestCase
             ->getMock();
 
         $restClient->expects($this->atLeastOnce())
-                   ->method('getLastResponseData')
-                   ->will($this->returnValue([
-                       "page_count" => $page, "page_size" => $limit, "total_items" => 1
-                   ]));
+            ->method('getLastResponseData')
+            ->will(
+                $this->returnValue(
+                    [
+                        "page_count" => $page,
+                        "page_size" => $limit,
+                        "total_items" => 1
+                    ]
+                )
+            );
 
 
         $restClient->expects($this->atLeastOnce())
@@ -163,6 +178,7 @@ class FindAllCriteriaTest extends \PHPUnit_Framework_TestCase
             ->method('getDataGateway')
             ->will($this->returnValue($restClient));
 
+        /** @var $model ModelStubInterface */
         $this->assertEquals($data, $this->criteria->apply($model));
     }
 
@@ -172,10 +188,9 @@ class FindAllCriteriaTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
+        /** @var $model ModelStubInterface */
         $paginator = $this->criteria->getPaginatorAdapter($model);
         $this->assertInstanceOf('\Matryoshka\Model\Wrapper\Rest\Paginator\RestPaginatorAdapter', $paginator);
         $this->assertSame($this->criteria->getTotalItemsParam(), $paginator->getTotalItemsParamName());
     }
-
-
 }

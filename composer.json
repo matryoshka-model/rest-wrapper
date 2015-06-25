@@ -4,7 +4,7 @@
     "homepage": "http://github.com/matryoshka-model/rest-wrapper",
     "license": "BSD-2-Clause",
     "require": {
-        "php": ">=5.4.0",
+        "php": ">=5.5.0",
         "matryoshka-model/matryoshka": "0.7.*@dev",
         "matryoshka-model/service-api": "0.4.*@dev",
         "zendframework/zend-stdlib": "2.*",

@@ -3,7 +3,7 @@
  * REST matryoshka wrapper
  *
  * @link        https://github.com/matryoshka-model/rest-wrapper
- * @copyright   Copyright (c) 2014, Ripa Club
+ * @copyright   Copyright (c) 2015, Ripa Club
  * @license     http://opensource.org/licenses/BSD-2-Clause Simplified BSD License
  */
 namespace Matryoshka\Model\Wrapper\Rest\Criteria\ActiveRecord;
@@ -11,8 +11,8 @@ namespace Matryoshka\Model\Wrapper\Rest\Criteria\ActiveRecord;
 use Matryoshka\Model\Criteria\ActiveRecord\AbstractCriteria;
 use Matryoshka\Model\ModelStubInterface;
 use Matryoshka\Model\Wrapper\Rest\RestClient;
-use Zend\Http\Response;
 use Matryoshka\Service\Api\Exception\ExceptionInterface;
+use Zend\Http\Response;
 
 /**
  * Class ActiveRecordCriteria
@@ -31,8 +31,7 @@ class ActiveRecordCriteria extends AbstractCriteria
         $client = $model->getDataGateway();
         try {
             $result = $client->get($this->getId());
-        } catch (ExceptionInterface $e)
-        {
+        } catch (ExceptionInterface $e) {
             if ($e->getCode() == Response::STATUS_CODE_404) {
                 return [];
             } // else
