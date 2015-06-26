@@ -19,7 +19,10 @@ script:
 after_script:
 - php vendor/bin/coveralls
 notifications:
-  irc: irc.freenode.org#matryoshka.dev
+  webhooks:
+      urls:
+        - https://webhooks.gitter.im/e/70b21e421c7b6b4d20a8
+      on_success: change
   email: false
 env:
   global:
