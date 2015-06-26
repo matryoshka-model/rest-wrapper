@@ -20,13 +20,13 @@ after_script:
 - php vendor/bin/coveralls
 notifications:
   webhooks:
-      urls:
-        - https://webhooks.gitter.im/e/70b21e421c7b6b4d20a8
-      on_success: change
+    urls:
+    - https://webhooks.gitter.im/e/70b21e421c7b6b4d20a8
+    on_success: change
   email: false
-env:
-  global:
-    secure: OV26hbLwT/AX03/x+AR+RRXFQgVyI1bnKY8wk4jShpjE+JGBUs0v7Vq4/xgfsKV3JX745Y3m4glOEmjk+xDGx5hoewfxW98KM8/6LGodXZbR7OQZms/8w7dLcMWJiqz9KHVWqlW3qBEPkscF4zlnFJhT2ZcnTu/BOGwEuyys390=
 cache:
   directories:
-    - $HOME/.composer/cache
+  - "$HOME/.composer/cache"
+env:
+  global:
+    secure: IUL56Ly25aLVRuKOL4I27VOpO7b1tVMUGN8KklDUYL48KOu3BCsPO1PDapiNDK0SLReQVXcd2Ffhjnydmy5Ff9+X+/xflItj2wj1zu5KkjgA7nKvFcvGOCI0395l0GffeIY9xAdY1mrvgV9Za16mukttVwid5FnNll2bP5NeEOI=
