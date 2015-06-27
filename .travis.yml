@@ -24,6 +24,8 @@ notifications:
     - https://webhooks.gitter.im/e/70b21e421c7b6b4d20a8
     on_success: change
   email: false
+  slack:
+    secure: QcaFXZUe0YBOVhw9m5V+K2wkQmacOuuiTVhngM2Nc5wuTpSE944+9SFF1PUvg72nwFcuKy8/r0MrqAuvfJjCqMAQ8hsPGrQMMvc2ubVxwy3Xbm+SRU1rf1HfTgX1L3iJBTb58SktaP/z/yVf5gpCJNbyRkJ/xsMo/OBZL8wu1Bw=
 cache:
   directories:
   - "$HOME/.composer/cache"
