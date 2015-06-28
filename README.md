@@ -5,8 +5,6 @@ REST wrapper
 
 > Matryoshka wrapper aimed at creating restful API clients.
 
----
-
 ## Installation
 
 Install it using [composer](http://getcomposer.org).
