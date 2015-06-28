@@ -1,15 +1,9 @@
 REST wrapper
 ============
 
-Matryoshka wrapper aimed at creating restful API clients.
+[![Latest Stable Version](https://img.shields.io/packagist/v/matryoshka-model/rest-wrapper.svg?style=flat-square)](https://packagist.org/packages/matryoshka-model/rest-wrapper) [![Build Status](https://img.shields.io/travis/matryoshka-model/rest-wrapper/master.svg?style=flat-square)](https://travis-ci.org/matryoshka-model/rest-wrapper) [![Coveralls branch](https://img.shields.io/coveralls/matryoshka-model/rest-wrapper/master.svg?style=flat-square)](https://coveralls.io/r/matryoshka-model/rest-wrapper?branch=master) [![Total Downloads](https://img.shields.io/packagist/dt/matryoshka-model/rest-wrapper.svg?style=flat-square)](https://packagist.org/packages/matryoshka-model/rest-wrapper)
 
-[![Latest Stable Version](https://img.shields.io/packagist/v/matryoshka-model/rest-wrapper.svg?style=flat-square)](https://packagist.org/packages/matryoshka-model/rest-wrapper)
-[![Total Downloads](https://img.shields.io/packagist/dt/matryoshka-model/rest-wrapper.svg?style=flat-square)](https://packagist.org/packages/matryoshka-model/rest-wrapper)
-
-| Master  | Develop |
-|:-------------:|:-------------:|
-| [![Build Status](https://img.shields.io/travis/matryoshka-model/rest-wrapper/master.svg?style=flat-square)](https://travis-ci.org/matryoshka-model/rest-wrapper) | [![Build Status](https://img.shields.io/travis/matryoshka-model/rest-wrapper/develop.svg?style=flat-square)](https://travis-ci.org/matryoshka-model/rest-wrapper) |
-| [![Coveralls branch](https://img.shields.io/coveralls/matryoshka-model/rest-wrapper/master.svg?style=flat-square)](https://coveralls.io/r/matryoshka-model/rest-wrapper?branch=master) | [![Coveralls branch](https://img.shields.io/coveralls/matryoshka-model/rest-wrapper/develop.svg?style=flat-square)](https://coveralls.io/r/matryoshka-model/rest-wrapper?branch=develop) |
+> Matryoshka wrapper aimed at creating restful API clients.
 
 ---
 
