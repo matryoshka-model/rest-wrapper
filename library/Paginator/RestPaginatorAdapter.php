@@ -3,17 +3,19 @@
  * REST matryoshka wrapper
  *
  * @link        https://github.com/matryoshka-model/rest-wrapper
- * @copyright   Copyright (c) 2014, Ripa Club
+ * @copyright   Copyright (c) 2015, Ripa Club
  * @license     http://opensource.org/licenses/BSD-2-Clause Simplified BSD License
  */
 namespace Matryoshka\Model\Wrapper\Rest\Paginator;
 
-use Zend\Paginator\Adapter\AdapterInterface;
 use Matryoshka\Model\AbstractModel;
+use Matryoshka\Model\Exception;
+use Matryoshka\Model\ModelStubInterface;
+use Matryoshka\Model\ResultSet\HydratingResultSet;
 use Matryoshka\Model\Wrapper\Rest\Criteria\FindAllCriteria;
 use Matryoshka\Model\Wrapper\Rest\RestClientInterface;
-use Matryoshka\Model\ResultSet\HydratingResultSet;
-use Matryoshka\Model\Exception;
+use Zend\Paginator\Adapter\AdapterInterface;
+
 /**
  * Class RestPaginatorAdapter
  *
@@ -28,11 +30,6 @@ use Matryoshka\Model\Exception;
  *
  * In both case, if $offset and $itemCountPerPage will be the same in later calls,
  * resultset already loaded will be reused, avoiding futher remote requests.
- *
- *
- *
- *
- *
  */
 class RestPaginatorAdapter implements AdapterInterface
 {
@@ -63,11 +60,10 @@ class RestPaginatorAdapter implements AdapterInterface
     protected $preloadCache = [];
 
     /**
-	 * @param AbstractModel $model
-	 * @param FindAllCriteria $criteria
-	 * @throws InvalidArgumentException
-	 */
-    public function __construct(AbstractModel $model, FindAllCriteria $criteria)
+     * @param ModelStubInterface $model
+     * @param FindAllCriteria $criteria
+     */
+    public function __construct(ModelStubInterface $model, FindAllCriteria $criteria)
     {
         $this->model = $model;
         $this->criteria = $criteria;
@@ -79,7 +75,7 @@ class RestPaginatorAdapter implements AdapterInterface
      */
     public function setTotalItemsParamName($totalItemsParamName)
     {
-        $this->totalItemsParamName = (string) $totalItemsParamName;
+        $this->totalItemsParamName = (string)$totalItemsParamName;
         return $this;
     }
 
@@ -116,19 +112,24 @@ class RestPaginatorAdapter implements AdapterInterface
         /* @var $restClient RestClientInterface */
         $restClient = $this->model->getDataGateway();
         if (!$restClient instanceof RestClientInterface) {
-            throw new Exception\InvalidArgumentException('Model must provide a RestClientInterface datagateway');
+            throw new Exception\InvalidArgumentException(
+                sprintf(
+                    'Model must provide a %s datagateway',
+                    RestClientInterface::class
+                )
+            );
         }
 
         $resultSet = $this->model->find($criteria);
-        $payloadData = (array) $restClient->getLastResponseData();
+        $payloadData = (array)$restClient->getLastResponseData();
 
         $this->count = null;
         if (isset($payloadData[$this->totalItemsParamName])) {
             $this->count = $payloadData[$this->totalItemsParamName];
         }
 
-        $offset            = $criteria->getOffset();
-        $itemCountPerPage  = $criteria->getLimit();
+        $offset = $criteria->getOffset();
+        $itemCountPerPage = $criteria->getLimit();
         $cacheKey = $offset . '-' . $itemCountPerPage;
 
         $this->preloadCache = [$cacheKey => $resultSet];
@@ -167,7 +168,7 @@ class RestPaginatorAdapter implements AdapterInterface
     /**
      * Returns an result set of items for a page
      *
-     * @param  int $offset           Page offset
+     * @param  int $offset Page offset
      * @param  int $itemCountPerPage Number of items per page
      * @return HydratingResultSet
      */
@@ -188,7 +189,9 @@ class RestPaginatorAdapter implements AdapterInterface
     public function count()
     {
         if (null === $this->count) {
-            throw new Exception\RuntimeException('If your API returns the total_items value, call preload() prior using count()');
+            throw new Exception\RuntimeException(
+                'If your API returns the total_items value, call preload() prior using count()'
+            );
         }
 
         return $this->count;

@@ -1,12 +1,22 @@
 <?php
+/**
+ * REST matryoshka wrapper
+ *
+ * @link        https://github.com/matryoshka-model/rest-wrapper
+ * @copyright   Copyright (c) 2015, Ripa Club
+ * @license     http://opensource.org/licenses/BSD-2-Clause Simplified BSD License
+ */
 namespace MatryoshkaModelWrapperRestTest\Criteria\ActiveRecord;
 
+use Matryoshka\Model\ModelStubInterface;
 use Matryoshka\Model\Wrapper\Rest\Criteria\ActiveRecord\ActiveRecordCriteria;
+use Matryoshka\Service\Api\Exception\InvalidResponseException;
 use Zend\Http\Request;
 use Zend\Http\Response;
-use Matryoshka\Service\Api\Exception\InvalidResponseException;
-use Matryoshka\Service\Api\Exception\ApiProblem\DomainException;
 
+/**
+ * Class ActiveRecordCriteriaTest
+ */
 class ActiveRecordCriteriaTest extends \PHPUnit_Framework_TestCase
 {
 
@@ -48,6 +58,7 @@ class ActiveRecordCriteriaTest extends \PHPUnit_Framework_TestCase
             ->method('getDataGateway')
             ->will($this->returnValue($restClient));
 
+        /** @var $model ModelStubInterface */
         $this->assertSame(1, $this->criteria->applyDelete($model));
 
         $response->setStatusCode(404);
@@ -76,6 +87,7 @@ class ActiveRecordCriteriaTest extends \PHPUnit_Framework_TestCase
             ->method('getDataGateway')
             ->will($this->returnValue($restClient));
 
+        /** @var $model ModelStubInterface */
         $this->assertEquals([$data], $this->criteria->apply($model));
 
         // Empty result test
@@ -88,6 +100,7 @@ class ActiveRecordCriteriaTest extends \PHPUnit_Framework_TestCase
             ->method('get')
             ->will($this->returnValue([]));
 
+        /** @var $model \PHPUnit_Framework_MockObject_MockObject */
         $model = $this->getMockBuilder('Matryoshka\Model\AbstractModel')
             ->disableOriginalConstructor()
             ->setMethods(['getDataGateway'])
@@ -97,6 +110,7 @@ class ActiveRecordCriteriaTest extends \PHPUnit_Framework_TestCase
             ->method('getDataGateway')
             ->will($this->returnValue($restClient));
 
+        /** @var $model ModelStubInterface */
         $this->assertEquals([], $this->criteria->apply($model));
     }
 
@@ -122,6 +136,7 @@ class ActiveRecordCriteriaTest extends \PHPUnit_Framework_TestCase
             ->method('getDataGateway')
             ->will($this->returnValue($restClient));
 
+        /** @var $model ModelStubInterface */
         $this->assertEquals([], $this->criteria->apply($model));
 
         // other exceptions proxy test
@@ -136,7 +151,7 @@ class ActiveRecordCriteriaTest extends \PHPUnit_Framework_TestCase
             ->method('get')
             ->will($this->throwException(new InvalidResponseException('Other error', 401)));
 
-
+        /** @var $model \PHPUnit_Framework_MockObject_MockObject */
         $model = $this->getMockBuilder('Matryoshka\Model\AbstractModel')
             ->disableOriginalConstructor()
             ->setMethods(['getDataGateway'])
@@ -147,6 +162,7 @@ class ActiveRecordCriteriaTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($restClient));
 
         $this->setExpectedException('\Matryoshka\Service\Api\Exception\InvalidResponseException');
+        /** @var $model ModelStubInterface */
         $this->criteria->apply($model);
     }
 
@@ -168,11 +184,11 @@ class ActiveRecordCriteriaTest extends \PHPUnit_Framework_TestCase
 
         $restClient->expects($this->any())
             ->method('put')
-            ->will($this->returnValue(['test'=>'test']));
+            ->will($this->returnValue(['test' => 'test']));
 
         $restClient->expects($this->any())
             ->method('post')
-            ->will($this->returnValue(['test'=>'test']));
+            ->will($this->returnValue(['test' => 'test']));
 
         $restClient->expects($this->any())
             ->method('getLastResponse')
@@ -187,8 +203,9 @@ class ActiveRecordCriteriaTest extends \PHPUnit_Framework_TestCase
             ->method('getDataGateway')
             ->will($this->returnValue($restClient));
 
-        $array =  ['test' => 'test'];
+        $array = ['test' => 'test'];
 
+        /** @var $model ModelStubInterface */
         $this->assertSame(1, $this->criteria->applyWrite($model, $array));
         $criteria = new ActiveRecordCriteria();
         $this->assertSame(1, $criteria->applyWrite($model, $array));

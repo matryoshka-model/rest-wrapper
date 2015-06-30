@@ -3,16 +3,16 @@
  * REST matryoshka wrapper
  *
  * @link        https://github.com/matryoshka-model/rest-wrapper
- * @copyright   Copyright (c) 2014, Ripa Club
+ * @copyright   Copyright (c) 2015, Ripa Club
  * @license     http://opensource.org/licenses/BSD-2-Clause Simplified BSD License
  */
 namespace Matryoshka\Model\Wrapper\Rest\Criteria\ActiveRecord;
 
 use Matryoshka\Model\Criteria\ActiveRecord\AbstractCriteria;
-use Matryoshka\Model\ModelInterface;
+use Matryoshka\Model\ModelStubInterface;
 use Matryoshka\Model\Wrapper\Rest\RestClient;
-use Zend\Http\Response;
 use Matryoshka\Service\Api\Exception\ExceptionInterface;
+use Zend\Http\Response;
 
 /**
  * Class ActiveRecordCriteria
@@ -25,14 +25,13 @@ class ActiveRecordCriteria extends AbstractCriteria
     /**
      * {@inheritdoc}
      */
-    public function apply(ModelInterface $model)
+    public function apply(ModelStubInterface $model)
     {
         /* @var $client RestClient */
         $client = $model->getDataGateway();
         try {
             $result = $client->get($this->getId());
-        } catch (ExceptionInterface $e)
-        {
+        } catch (ExceptionInterface $e) {
             if ($e->getCode() == Response::STATUS_CODE_404) {
                 return [];
             } // else
@@ -44,7 +43,7 @@ class ActiveRecordCriteria extends AbstractCriteria
     /**
      * {@inheritdoc}
      */
-    public function applyWrite(ModelInterface $model, array &$data)
+    public function applyWrite(ModelStubInterface $model, array &$data)
     {
         /* @var $client RestClient */
         $client = $model->getDataGateway();
@@ -68,7 +67,7 @@ class ActiveRecordCriteria extends AbstractCriteria
     /**
      * {@inheritdoc}
      */
-    public function applyDelete(ModelInterface $model)
+    public function applyDelete(ModelStubInterface $model)
     {
         /* @var $client RestClient */
         $client = $model->getDataGateway();

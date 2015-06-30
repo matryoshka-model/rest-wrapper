@@ -1,9 +1,19 @@
 <?php
+/**
+ * REST matryoshka wrapper
+ *
+ * @link        https://github.com/matryoshka-model/rest-wrapper
+ * @copyright   Copyright (c) 2015, Ripa Club
+ * @license     http://opensource.org/licenses/BSD-2-Clause Simplified BSD License
+ */
 namespace MatryoshkaModelWrapperRestTest\Service;
 
 use Zend\ServiceManager\Config;
 use Zend\ServiceManager\ServiceManager;
 
+/**
+ * Class RestClientAbstractServiceFactoryTest
+ */
 class RestClientAbstractServiceFactoryTest extends \PHPUnit_Framework_TestCase
 {
     /**
@@ -36,7 +46,7 @@ class RestClientAbstractServiceFactoryTest extends \PHPUnit_Framework_TestCase
         $config = [
             'matryoshka-rest' => [
                 'RestDataGateway\Valid' => [
-                    'resource_name'   => 'valid',
+                    'resource_name' => 'valid',
                     'valid_status_code' => [
                         200,
                         201
@@ -46,18 +56,19 @@ class RestClientAbstractServiceFactoryTest extends \PHPUnit_Framework_TestCase
                     'uri_resource_strategy' => 'Strategy',
                     'profiler' => 'Profiler'
                 ],
-
                 'RestGateway\Invalid' => [
                 ],
             ],
         ];
 
         $sm = $this->serviceManager = new ServiceManager(
-            new Config([
-                'abstract_factories' => [
-                    'Matryoshka\Model\Wrapper\Rest\Service\RestClientAbstractServiceFactory',
+            new Config(
+                [
+                    'abstract_factories' => [
+                        'Matryoshka\Model\Wrapper\Rest\Service\RestClientAbstractServiceFactory',
+                    ]
                 ]
-            ])
+            )
         );
 
         $sm->setService('Config', $config);

@@ -3,7 +3,7 @@
  * REST matryoshka wrapper
  *
  * @link        https://github.com/matryoshka-model/rest-wrapper
- * @copyright   Copyright (c) 2014, Ripa Club
+ * @copyright   Copyright (c) 2015, Ripa Club
  * @license     http://opensource.org/licenses/BSD-2-Clause Simplified BSD License
  */
 namespace Matryoshka\Model\Wrapper\Rest;
@@ -46,14 +46,14 @@ class RestClient extends HttpApi implements RestClientInterface
 
 
     /**
-     * @param $resourceName
+     * @param mixed $resourceName
      * @param Client $httpClient
      * @param Request $baseRequest
      */
     public function __construct($resourceName, Client $httpClient = null, Request $baseRequest = null)
     {
         $this->resourceName = $resourceName;
-        $this->httpClient = $httpClient ? $httpClient : new Client();
+        $this->httpClient = $httpClient ? $httpClient : new Client;
         $this->baseRequest = $baseRequest ? $baseRequest : $this->httpClient->getRequest();
     }
 

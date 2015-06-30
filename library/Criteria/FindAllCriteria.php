@@ -3,27 +3,23 @@
  * REST matryoshka wrapper
  *
  * @link        https://github.com/matryoshka-model/rest-wrapper
- * @copyright   Copyright (c) 2014, Ripa Club
+ * @copyright   Copyright (c) 2015, Ripa Club
  * @license     http://opensource.org/licenses/BSD-2-Clause Simplified BSD License
  */
 namespace Matryoshka\Model\Wrapper\Rest\Criteria;
 
-
-use Matryoshka\Model\Exception;
-use Matryoshka\Model\ModelInterface;
-use Zend\Stdlib\Hydrator\AbstractHydrator;
 use Matryoshka\Model\Criteria\AbstractCriteria;
-use Matryoshka\Model\Wrapper\Rest\RestClient;
 use Matryoshka\Model\Criteria\PaginableCriteriaInterface;
+use Matryoshka\Model\Exception;
+use Matryoshka\Model\ModelStubInterface;
 use Matryoshka\Model\Wrapper\Rest\Paginator\RestPaginatorAdapter;
-
+use Matryoshka\Model\Wrapper\Rest\RestClient;
 
 /**
  * Class FindAllCriteria
  */
 class FindAllCriteria extends AbstractCriteria implements PaginableCriteriaInterface
 {
-
     /**
      * @var int|null
      */
@@ -77,7 +73,7 @@ class FindAllCriteria extends AbstractCriteria implements PaginableCriteriaInter
      */
     public function setPageSizeParam($name)
     {
-        $this->pageSizeParamName = (string) $name;
+        $this->pageSizeParamName = (string)$name;
         return $this;
     }
 
@@ -95,7 +91,7 @@ class FindAllCriteria extends AbstractCriteria implements PaginableCriteriaInter
      */
     public function setTotalItemsParam($name)
     {
-        $this->totalItemsParamName = (string) $name;
+        $this->totalItemsParamName = (string)$name;
         return $this;
     }
 
@@ -137,13 +133,13 @@ class FindAllCriteria extends AbstractCriteria implements PaginableCriteriaInter
         }
 
         if ($this->limit > 0) {
-            $this->offset = (int) $offset;
-            $this->page = (int) ceil($this->offset / $this->limit) + 1;
+            $this->offset = (int)$offset;
+            $this->page = (int)ceil($this->offset / $this->limit) + 1;
         } else {
             throw new Exception\RuntimeException(
-                __METHOD__ .'() requires that limit must be greater than zero.'
-                .' Use setPage() or set a limit prior to call '. __METHOD__ . '()'
-           );
+                __METHOD__ . '() requires that limit must be greater than zero.'
+                . ' Use setPage() or set a limit prior to call ' . __METHOD__ . '()'
+            );
         }
 
         return $this;
@@ -168,7 +164,7 @@ class FindAllCriteria extends AbstractCriteria implements PaginableCriteriaInter
      */
     public function setPage($page)
     {
-        $this->page = null === $page ? null : (int) $page;
+        $this->page = null === $page ? null : (int)$page;
         $this->updateOffset();
         return $this;
     }
@@ -184,7 +180,7 @@ class FindAllCriteria extends AbstractCriteria implements PaginableCriteriaInter
     /**
      * {@inheritdoc}
      */
-    public function apply(ModelInterface $model)
+    public function apply(ModelStubInterface $model)
     {
         /* @var $client RestClient */
         $client = $model->getDataGateway();
@@ -204,7 +200,7 @@ class FindAllCriteria extends AbstractCriteria implements PaginableCriteriaInter
         $payloadData = $client->getLastResponseData();
 
         if (isset($payloadData[$this->pageSizeParamName])) {
-            $this->limit = (int) $payloadData[$this->pageSizeParamName];
+            $this->limit = (int)$payloadData[$this->pageSizeParamName];
         }
 
         $this->updateOffset();
@@ -215,12 +211,10 @@ class FindAllCriteria extends AbstractCriteria implements PaginableCriteriaInter
     /**
      * {@inheritdoc}
      */
-    public function getPaginatorAdapter(ModelInterface $model)
+    public function getPaginatorAdapter(ModelStubInterface $model)
     {
         $paginator = new RestPaginatorAdapter($model, $this);
         $paginator->setTotalItemsParamName($this->totalItemsParamName);
         return $paginator;
     }
-
-
 }

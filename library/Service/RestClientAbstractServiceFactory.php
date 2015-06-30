@@ -3,14 +3,13 @@
  * REST matryoshka wrapper
  *
  * @link        https://github.com/matryoshka-model/rest-wrapper
- * @copyright   Copyright (c) 2014, Ripa Club
+ * @copyright   Copyright (c) 2015, Ripa Club
  * @license     http://opensource.org/licenses/BSD-2-Clause Simplified BSD License
  */
 namespace Matryoshka\Model\Wrapper\Rest\Service;
 
 use Matryoshka\Model\Wrapper\Rest\RestClient;
 use Zend\Http\Client;
-use Zend\Http\Headers;
 use Zend\Http\Request;
 use Zend\ServiceManager\AbstractFactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
@@ -65,14 +64,15 @@ class RestClientAbstractServiceFactory implements AbstractFactoryInterface
     {
         $config = $this->getConfig($serviceLocator)[$requestedName];
 
-
         $resourceName = $config['resource_name'];
 
+        /** @var $httpClient Client */
         $httpClient = isset($config['http_client']) && $serviceLocator->has($config['http_client']) ?
-                $serviceLocator->get($config['http_client']) : null;
+            $serviceLocator->get($config['http_client']) : null;
 
+        /** @var $baseRequest Request */
         $baseRequest = isset($config['base_request']) && $serviceLocator->has($config['base_request']) ?
-                $serviceLocator->get($config['base_request']) : null;
+            $serviceLocator->get($config['base_request']) : null;
 
         $restClient = new RestClient($resourceName, $httpClient, $baseRequest);
 
