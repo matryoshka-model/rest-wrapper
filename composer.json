@@ -6,7 +6,7 @@
     "require": {
         "php": ">=5.5.0",
         "matryoshka-model/matryoshka": "~0.8.0",
-        "matryoshka-model/service-api": "~0.4.0",
+        "matryoshka-model/service-api": "~0.3.0",
         "zendframework/zend-stdlib": "2.*",
         "zendframework/zend-paginator": "2.*",
         "zendframework/zend-servicemanager": "2.*",
