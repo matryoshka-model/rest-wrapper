@@ -48,7 +48,7 @@ class ActiveRecordCriteria extends AbstractCriteria
         /* @var $client RestClient */
         $client = $model->getDataGateway();
 
-        if ($this->id) {
+        if ($this->hasId()) {
             $data = $client->put($this->getId(), $data);
         } else {
             $data = $client->post($data);
