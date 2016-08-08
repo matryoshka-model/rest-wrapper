@@ -27,15 +27,62 @@ class RestClientTest extends \PHPUnit_Framework_TestCase
     public function providerServiceResponse()
     {
         return [
-            ['get', [null, ['test' => 'test']], '{"test": "test"}', 'application/json', 'json'],
-            ['get', [11, ['test' => 'test']], '{"test": "test"}', 'application/json', 'json'],
-            ['head', [null, ['test' => 'test']], '{"test": "test"}', 'application/json', 'json'],
-            ['options', [['test' => 'test']], '{"test": "test"}', 'application/json', 'json'],
-            ['patch', [null, ['test' => 'test']], '{"test": "test"}', 'application/json', 'json'],
-            ['post', [['test' => 'test'], ['test' => 'test']], '{"test": "test"}', 'application/json', 'json'],
-            ['put', [null, ['test' => 'test'], ['test' => 'test']], '{"test": "test"}', 'application/json', 'json'],
-            ['delete', [null, ['test' => 'test']], '{"test": "test"}', 'application/json', 'json'],
-            // ['get', ['id', ['test' => 'test']], '<test>test</test>', 'application/xml', 'json'],
+            [
+                'get',
+                [null, ['test' => 'test']],
+                '{"test": "test"}',
+                'application/json',
+                'json'
+            ],
+            [
+                'get',
+                [11, ['test' => 'test']],
+                '{"test": "test"}',
+                'application/json',
+                'json'
+            ],
+            [
+                'head',
+                [null, ['test' => 'test']],
+                '{"test": "test"}',
+                'application/json',
+                'json'
+            ],
+            [
+                'options',
+                [['test' => 'test']],
+                '{"test": "test"}',
+                'application/json',
+                'json'
+            ],
+            [
+                'patch',
+                [null, ['test' => 'test']],
+                '{"test": "test"}',
+                'application/json',
+                'json'
+            ],
+            [
+                'post',
+                [['test' => 'test'], ['test' => 'test']],
+                '{"test": "test"}',
+                'application/json',
+                'json'
+            ],
+            [
+                'put',
+                [null, ['test' => 'test'], ['test' => 'test']],
+                '{"test": "test"}',
+                'application/json',
+                'json'
+            ],
+            [
+                'delete',
+                [null, ['test' => 'test']],
+                '{"test": "test"}',
+                'application/json',
+                'json'
+            ],
         ];
     }
 
@@ -60,7 +107,7 @@ class RestClientTest extends \PHPUnit_Framework_TestCase
             // Bad Responses
             ['get', [null], '{"test": "test"}', 'application/json', 500, 'json'],
             ['post', [['test' => 'test']], '{"test": "test"}', 'application/json', 500, 'json'],
-            ['delete', ['id'], '', 'application/json', 500, 'json'],
+            ['delete', ['id'], '{}', 'application/json', 500, 'json'],
             [
                 'get',
                 [null],
@@ -73,7 +120,7 @@ class RestClientTest extends \PHPUnit_Framework_TestCase
             [
                 'get',
                 ['id'],
-                '',
+                '{}',
                 'application/problem+json',
                 502,
                 'json',
@@ -82,13 +129,13 @@ class RestClientTest extends \PHPUnit_Framework_TestCase
             [
                 'get',
                 ['id'],
-                '',
+                '{}',
                 'application/invalid-response-format',
                 502,
                 'json',
                 '\Matryoshka\Service\Api\Exception\InvalidFormatException'
             ],
-            ['get', ['id'], null, '', 502, 'json'], //content-type missing
+            ['get', ['id'], '{}', '', 502, 'json'], //content-type missing
 
             //Bad requests
             [

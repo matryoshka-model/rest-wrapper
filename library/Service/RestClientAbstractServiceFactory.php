@@ -8,10 +8,11 @@
  */
 namespace Matryoshka\Model\Wrapper\Rest\Service;
 
+use Interop\Container\ContainerInterface;
 use Matryoshka\Model\Wrapper\Rest\RestClient;
 use Zend\Http\Client;
 use Zend\Http\Request;
-use Zend\ServiceManager\AbstractFactoryInterface;
+use Zend\ServiceManager\Factory\AbstractFactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
@@ -30,16 +31,11 @@ class RestClientAbstractServiceFactory implements AbstractFactoryInterface
     protected $config;
 
     /**
-     * Determine if we can create a service with name
-     *
-     * @param ServiceLocatorInterface $serviceLocator
-     * @param $name
-     * @param $requestedName
-     * @return bool
+     * {@inheritdoc}
      */
-    public function canCreateServiceWithName(ServiceLocatorInterface $serviceLocator, $name, $requestedName)
+    public function canCreate(ContainerInterface $container, $requestedName)
     {
-        $config = $this->getConfig($serviceLocator);
+        $config = $this->getConfig($container);
         if (empty($config)) {
             return false;
         }
@@ -53,31 +49,26 @@ class RestClientAbstractServiceFactory implements AbstractFactoryInterface
     }
 
     /**
-     * Create service with name
-     *
-     * @param ServiceLocatorInterface $serviceLocator
-     * @param $name
-     * @param $requestedName
-     * @return mixed
+     * {@inheritdoc}
      */
-    public function createServiceWithName(ServiceLocatorInterface $serviceLocator, $name, $requestedName)
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        $config = $this->getConfig($serviceLocator)[$requestedName];
+        $config = $this->getConfig($container)[$requestedName];
 
         $resourceName = $config['resource_name'];
 
         /** @var $httpClient Client */
-        $httpClient = isset($config['http_client']) && $serviceLocator->has($config['http_client']) ?
-            $serviceLocator->get($config['http_client']) : null;
+        $httpClient = isset($config['http_client']) && $container->has($config['http_client']) ?
+            $container->get($config['http_client']) : null;
 
         /** @var $baseRequest Request */
-        $baseRequest = isset($config['base_request']) && $serviceLocator->has($config['base_request']) ?
-            $serviceLocator->get($config['base_request']) : null;
+        $baseRequest = isset($config['base_request']) && $container->has($config['base_request']) ?
+            $container->get($config['base_request']) : null;
 
         $restClient = new RestClient($resourceName, $httpClient, $baseRequest);
 
-        if (isset($config['uri_resource_strategy']) && $serviceLocator->has($config['uri_resource_strategy'])) {
-            $restClient->setUriResourceStrategy($serviceLocator->get($config['uri_resource_strategy']));
+        if (isset($config['uri_resource_strategy']) && $container->has($config['uri_resource_strategy'])) {
+            $restClient->setUriResourceStrategy($container->get($config['uri_resource_strategy']));
         }
 
         // Array of int code valid
@@ -89,8 +80,8 @@ class RestClientAbstractServiceFactory implements AbstractFactoryInterface
             $restClient->setRequestFormat($config['request_format']);
         }
         // Profiler
-        if (isset($config['profiler']) && $serviceLocator->has($config['profiler'])) {
-            $restClient->setProfiler($serviceLocator->get($config['profiler']));
+        if (isset($config['profiler']) && $container->has($config['profiler'])) {
+            $restClient->setProfiler($container->get($config['profiler']));
         }
 
         return $restClient;
@@ -99,21 +90,23 @@ class RestClientAbstractServiceFactory implements AbstractFactoryInterface
     /**
      * Get rest configuration, if any
      *
-     * @param  ServiceLocatorInterface $serviceLocator
+     * @param ContainerInterface $container
      * @return array
      */
-    protected function getConfig(ServiceLocatorInterface $serviceLocator)
+    protected function getConfig(ContainerInterface $container)
     {
         if ($this->config !== null) {
             return $this->config;
         }
 
-        if (!$serviceLocator->has('Config')) {
+        $container->get('Config');
+
+        if (!$container->has('Config')) {
             $this->config = [];
             return $this->config;
         }
 
-        $config = $serviceLocator->get('Config');
+        $config = $container->get('Config');
         if (!isset($config[$this->configKey]) || !is_array($config[$this->configKey])) {
             $this->config = [];
             return $this->config;

@@ -61,14 +61,11 @@ class RestClientAbstractServiceFactoryTest extends \PHPUnit_Framework_TestCase
             ],
         ];
 
-        $sm = $this->serviceManager = new ServiceManager(
-            new Config(
-                [
-                    'abstract_factories' => [
-                        'Matryoshka\Model\Wrapper\Rest\Service\RestClientAbstractServiceFactory',
-                    ]
+        $sm = $this->serviceManager = new ServiceManager( [
+                'abstract_factories' => [
+                    'Matryoshka\Model\Wrapper\Rest\Service\RestClientAbstractServiceFactory',
                 ]
-            )
+            ]
         );
 
         $sm->setService('Config', $config);
@@ -104,35 +101,13 @@ class RestClientAbstractServiceFactoryTest extends \PHPUnit_Framework_TestCase
      * @dataProvider providerValidService
      * @expectedException \Zend\ServiceManager\Exception\ServiceNotFoundException
      */
-    public function testNullConfig($service)
-    {
-        $sl = new ServiceManager(
-            new Config(
-                [
-                    'abstract_factories' => [
-                        'Matryoshka\Model\Wrapper\Rest\Service\RestClientAbstractServiceFactory',
-                    ]
-                ]
-            )
-        );
-        $sl->get($service);
-    }
-
-    /**
-     * @param string $service
-     * @dataProvider providerValidService
-     * @expectedException \Zend\ServiceManager\Exception\ServiceNotFoundException
-     */
     public function testEmptyConfig($service)
     {
-        $sl = new ServiceManager(
-            new Config(
-                [
-                    'abstract_factories' => [
-                        'Matryoshka\Model\Wrapper\Rest\Service\RestClientAbstractServiceFactory',
-                    ]
+        $sl = new ServiceManager([
+                'abstract_factories' => [
+                    'Matryoshka\Model\Wrapper\Rest\Service\RestClientAbstractServiceFactory',
                 ]
-            )
+            ]
         );
         $sl->setService('Config', []);
         $sl->get($service);

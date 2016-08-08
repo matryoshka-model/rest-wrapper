@@ -5,18 +5,18 @@
     "license": "BSD-2-Clause",
     "require": {
         "php": ">=5.5.0",
-        "matryoshka-model/matryoshka": "~0.8.0",
-        "matryoshka-model/service-api": "~0.3.0",
-        "zendframework/zend-stdlib": "2.*",
+        "matryoshka-model/matryoshka": "dev-zf-3",
+        "matryoshka-model/service-api": "dev-zf-3",
+        "zendframework/zend-stdlib": "3.*",
         "zendframework/zend-paginator": "2.*",
-        "zendframework/zend-servicemanager": "2.*",
+        "zendframework/zend-servicemanager": "3.*",
         "zendframework/zendxml": "~1.0-dev",
         "zfcampus/zf-api-problem": "~1.0"
     },
     "require-dev": {
         "phpunit/phpunit": "~4.3",
         "satooshi/php-coveralls": "dev-master",
-        "zendframework/zend-mvc": "2.*"
+        "zendframework/zend-mvc": "3.*"
     },
     "extra": {
         "branch-alias": {
